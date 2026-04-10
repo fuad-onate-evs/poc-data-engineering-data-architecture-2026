@@ -29,6 +29,13 @@ transform/dbt_packages/
 .DS_Store
 Thumbs.db
 
+# LLM tooling — alternate context filenames (symlinks to AGENTS.md)
+CLAUDE.md
+.cursorrules
+.cursor/
+.aider*
+.continuerules
+
 # WSL2 / NTFS metadata
 *:Zone.Identifier
 *:mshield

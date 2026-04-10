@@ -61,5 +61,5 @@ The proposed architecture, integrating **Airflow**, **Databricks**, and **GitHub
 
 - Sprint plan: [poc-agile-plan-energy.md](poc-agile-plan-energy.md)
 - Onboarding: [ONBOARDING.md](ONBOARDING.md)
-- Architecture: [../CLAUDE.md](../CLAUDE.md)
+- Architecture: [../AGENTS.md](../AGENTS.md)
 - GitHub: <https://github.com/fuad-onate-evs/poc-data-engineering-data-architecture-2026>

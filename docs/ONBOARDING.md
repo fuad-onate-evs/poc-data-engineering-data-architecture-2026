@@ -14,7 +14,7 @@ This POC builds an end-to-end data engineering pipeline for renewable-energy gri
 | DE3 | Transformation, Gold layer, testing |
 | PM | Planning, stakeholders, UAT |
 
-The 10-week plan is in [poc-agile-plan-energy.md](poc-agile-plan-energy.md). The original POC brief (cost model, schedule, justification) is in [poc-overview.md](poc-overview.md). Architecture and conventions live in [../CLAUDE.md](../CLAUDE.md).
+The 10-week plan is in [poc-agile-plan-energy.md](poc-agile-plan-energy.md). The original POC brief (cost model, schedule, justification) is in [poc-overview.md](poc-overview.md). Architecture and conventions live in [../AGENTS.md](../AGENTS.md).
 
 ## 2. Prerequisites
 
@@ -157,7 +157,7 @@ poc-data-eng/
 
 | What | Where |
 |---|---|
-| Architecture & conventions | [../CLAUDE.md](../CLAUDE.md) |
+| Architecture & conventions | [../AGENTS.md](../AGENTS.md) |
 | Sprint plan | [poc-agile-plan-energy.md](poc-agile-plan-energy.md) |
 | Original POC brief | [poc-overview.md](poc-overview.md) |
 | Visual widgets | [widgets/](widgets/) |

@@ -1,4 +1,6 @@
-# CLAUDE.md — POC Data Engineering & Architecture Platform
+# AGENTS.md — POC Data Engineering & Architecture Platform
+
+> Project context for LLMs working on this codebase. Follows the [agents.md](https://agents.md/) convention. If your tooling expects a different filename, symlink it locally (the alternate name is gitignored).
 
 ## Project overview
 
@@ -41,8 +43,8 @@ Seeds (CSV) → Source Validator → Kafka (5 topics) → Bronze Writer → Data
 ```
 poc-data-eng/
 ├── README.md                       # Concise project overview + quick start
-├── CLAUDE.md                       # ← you are here
-├── SESSION_UPDATE.md               # Last-session handoff
+├── AGENTS.md                       # ← you are here (LLM project context)
+├── sessions/                       # Cross-session handoff archive (latest first)
 ├── pyproject.toml                  # uv-managed deps + tool configs
 ├── .python-version                 # 3.12
 ├── .gitignore .editorconfig .pre-commit-config.yaml

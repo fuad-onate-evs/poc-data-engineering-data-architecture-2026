@@ -238,7 +238,7 @@ uv run python -m ingestion.consumers.bronze_writer --mode local-delta --timeout 
 ```text
 poc-data-eng/
 ├── README.md                       # ← you are here
-├── CLAUDE.md                       # full architecture + conventions reference
+├── AGENTS.md                       # full architecture + conventions reference
 ├── SESSION_UPDATE.md               # last-session handoff for IDE agents
 ├── pyproject.toml                  # uv-managed deps + tool configs (ruff, pytest, mypy, sqlfluff)
 ├── uv.lock                         # locked dependency graph (committed)
@@ -573,7 +573,7 @@ Full sprint breakdown: [docs/poc-agile-plan-energy.md](docs/poc-agile-plan-energ
 
 | Doc | Purpose |
 |---|---|
-| [CLAUDE.md](CLAUDE.md) | Full architecture, conventions, current Done/TODO — also context for IDE AI agents |
+| [AGENTS.md](AGENTS.md) | Full architecture, conventions, current Done/TODO — also project context for LLM tooling |
 | [docs/ONBOARDING.md](docs/ONBOARDING.md) | First-day team walkthrough (prereqs, setup, troubleshooting) |
 | [docs/poc-overview.md](docs/poc-overview.md) | Original POC brief (cost, schedule, justification) |
 | [docs/poc-agile-plan-energy.md](docs/poc-agile-plan-energy.md) | Bilingual sprint plan: 5 sprints, 6 epics, 15 stories, 148 SP |
