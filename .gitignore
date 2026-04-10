@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# uv
+.uv/
+
+# Environment
+.env
+envs/.env.dev
+envs/.env.qa
+envs/.env.prd
+
+# Local data outputs
+data/
+transform/seeds/*.csv
+transform/seeds_ff/*.csv
+transform/target/
+transform/dbt_packages/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# WSL2 / NTFS metadata
+*:Zone.Identifier
+*:mshield
+
+# Build/dist
+dist/
+build/

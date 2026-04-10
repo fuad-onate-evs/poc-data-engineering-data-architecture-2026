@@ -1,0 +1,303 @@
+
+<h2 class="sr-only">Interactive simulation of 12 renewable energy grid nodes based on Final Fantasy cities with generation, demand, and dispatch data</h2>
+<div style="padding:0.5rem 0;">
+
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+  <span style="font-size:18px;font-weight:500;color:var(--color-text-primary);">Gaia energy grid — renewable transition simulation</span>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px;font-size:12px;color:var(--color-text-secondary);">
+  <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#1D9E75"></span>Solar / Mako solar</span>
+  <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#378ADD"></span>Wind / Aero</span>
+  <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#534AB7"></span>Hydro / Aqua</span>
+  <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#639922"></span>Geothermal / Ifrit</span>
+  <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#BA7517"></span>Tidal / Leviathan</span>
+  <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#D85A30"></span>Demand</span>
+  <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#D4537E"></span>Curtailment</span>
+</div>
+
+<div style="margin-bottom:10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+  <label style="font-size:13px;color:var(--color-text-secondary);">Hour</label>
+  <input type="range" min="0" max="23" value="12" id="hr" style="flex:1;min-width:120px;" step="1"/>
+  <span id="hrV" style="font-size:14px;font-weight:500;min-width:50px;">12:00</span>
+  <button id="pBtn" style="font-size:12px;padding:4px 12px;">Play</button>
+  <select id="season" style="font-size:12px;padding:4px 8px;">
+    <option value="summer">Summer</option>
+    <option value="winter">Winter</option>
+    <option value="equinox" selected>Equinox</option>
+  </select>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:10px;" id="cards"></div>
+<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:14px;" id="kpis"></div>
+
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:14px;">
+  <div>
+    <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin:0 0 6px;">System generation vs demand (24h)</p>
+    <div style="position:relative;width:100%;height:220px;"><canvas id="c1" role="img" aria-label="Line chart generation vs demand 24h">Gen vs demand.</canvas></div>
+  </div>
+  <div>
+    <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin:0 0 6px;">Generation mix by node</p>
+    <div style="position:relative;width:100%;height:220px;"><canvas id="c2" role="img" aria-label="Stacked bar generation mix">Mix chart.</canvas></div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:14px;">
+  <div>
+    <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin:0 0 6px;">Installed capacity vs demand by node</p>
+    <div style="position:relative;width:100%;height:200px;"><canvas id="c3" role="img" aria-label="Capacity vs demand bar chart">Capacity chart.</canvas></div>
+  </div>
+  <div>
+    <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin:0 0 6px;">Revenue & curtailment cost (Gil/h)</p>
+    <div style="position:relative;width:100%;height:200px;"><canvas id="c4" role="img" aria-label="Revenue and curtailment chart">Revenue chart.</canvas></div>
+  </div>
+</div>
+
+<div>
+  <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin:0 0 6px;">Grid dispatch table</p>
+  <div style="overflow-x:auto;">
+    <table style="width:100%;font-size:11px;border-collapse:collapse;">
+      <thead><tr style="border-bottom:0.5px solid var(--color-border-tertiary);">
+        <th style="text-align:left;padding:5px 6px;color:var(--color-text-secondary);font-weight:500;">Node</th>
+        <th style="text-align:left;padding:5px 6px;color:var(--color-text-secondary);font-weight:500;">Region</th>
+        <th style="text-align:right;padding:5px 6px;color:#1D9E75;font-weight:500;">Solar</th>
+        <th style="text-align:right;padding:5px 6px;color:#378ADD;font-weight:500;">Wind</th>
+        <th style="text-align:right;padding:5px 6px;color:#534AB7;font-weight:500;">Hydro</th>
+        <th style="text-align:right;padding:5px 6px;color:#639922;font-weight:500;">Geo</th>
+        <th style="text-align:right;padding:5px 6px;color:#BA7517;font-weight:500;">Tidal</th>
+        <th style="text-align:right;padding:5px 6px;font-weight:500;color:var(--color-text-primary);">Gen MW</th>
+        <th style="text-align:right;padding:5px 6px;color:#D85A30;font-weight:500;">Dem MW</th>
+        <th style="text-align:right;padding:5px 6px;font-weight:500;color:var(--color-text-primary);">Bal</th>
+        <th style="text-align:right;padding:5px 6px;color:#D4537E;font-weight:500;">Curt</th>
+        <th style="text-align:right;padding:5px 6px;color:var(--color-text-secondary);font-weight:500;">Gil/MWh</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+      <tfoot id="tfoot"></tfoot>
+    </table>
+  </div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const cs=getComputedStyle(document.documentElement);
+const tp=cs.getPropertyValue('--color-text-primary').trim()||'#222';
+const ts2=cs.getPropertyValue('--color-text-secondary').trim()||'#888';
+const gc='rgba(128,128,128,0.12)';
+
+const N=[
+  {id:'MID',name:'Midgar',        reg:'Shinra Territory',     climate:'urban',     sC:120,wC:40, hC:60, gC:80, tC:0,  bD:2200,pM:1.7,ppa:58,desc:'Mega-city, post-Mako transition'},
+  {id:'JNV',name:'Junon',         reg:'Western Continent',    climate:'coastal',   sC:80, wC:280,hC:0,  gC:0,  tC:200,bD:650, pM:1.4,ppa:45,desc:'Port city, offshore wind & tidal'},
+  {id:'CST',name:'Costa del Sol',  reg:'Western Continent',    climate:'tropical',  sC:400,wC:60, hC:0,  gC:0,  tC:80, bD:180, pM:1.6,ppa:38,desc:'Resort town, solar paradise'},
+  {id:'NVH',name:'Nibelheim',     reg:'Mt. Nibel Range',      climate:'mountain',  sC:30, wC:120,hC:0,  gC:350,tC:0,  bD:60,  pM:1.2,ppa:32,desc:'Volcanic geothermal hub'},
+  {id:'RKT',name:'Rocket Town',   reg:'Western Continent',    climate:'plains',    sC:200,wC:300,hC:40, gC:0,  tC:0,  bD:250, pM:1.3,ppa:40,desc:'Industrial, wind corridor'},
+  {id:'WUT',name:'Wutai',         reg:'Wutai Continent',      climate:'monsoon',   sC:100,wC:150,hC:400,gC:0,  tC:60, bD:320, pM:1.5,ppa:42,desc:'Mountain hydro kingdom'},
+  {id:'GLD',name:'Gold Saucer',   reg:'Corel Desert',         climate:'desert',    sC:600,wC:80, hC:0,  gC:0,  tC:0,  bD:500, pM:1.8,ppa:35,desc:'Desert mega-solar, entertainment load'},
+  {id:'BAL',name:'Balamb',        reg:'Balamb Archipelago',   climate:'island',    sC:150,wC:220,hC:80, gC:0,  tC:150,bD:200, pM:1.3,ppa:44,desc:'Island grid, wind + tidal'},
+  {id:'LIN',name:'Lindblum',      reg:'Mist Continent',       climate:'highland',  sC:180,wC:260,hC:300,gC:0,  tC:0,  bD:900, pM:1.5,ppa:48,desc:'Industrial capital, hydro backbone'},
+  {id:'ALX',name:'Alexandria',    reg:'Mist Continent',       climate:'temperate', sC:220,wC:100,hC:200,gC:0,  tC:0,  bD:550, pM:1.4,ppa:46,desc:'Royal city, balanced mix'},
+  {id:'ZAN',name:'Zanarkand',     reg:'Northern Reach',       climate:'arctic',    sC:20, wC:350,hC:500,gC:40, tC:100,bD:400, pM:1.3,ppa:36,desc:'Arctic wind + hydro powerhouse'},
+  {id:'RAB',name:'Rabanastre',    reg:'Dalmascan Desert',     climate:'arid',      sC:550,wC:100,hC:0,  gC:60, tC:0,  bD:700, pM:1.4,ppa:37,desc:'Arid solar + geothermal'},
+];
+
+function sF(h,cap,clim,ssn){
+  if(h<5||h>20) return 0;
+  const pk=ssn==='summer'?13.5:ssn==='winter'?12.5:13;
+  const sp=ssn==='summer'?4:ssn==='winter'?3:3.5;
+  const climF={'desert':1.1,'arid':1.05,'tropical':0.95,'arctic':0.5,'mountain':0.7,'monsoon':0.75,'coastal':0.85,'island':0.9,'urban':0.7,'plains':0.9,'highland':0.85,'temperate':0.85}[clim]||0.85;
+  const ssnF=ssn==='summer'?1.0:ssn==='winter'?0.55:0.8;
+  return cap*Math.exp(-0.5*((h-pk)/sp)**2)*climF*ssnF*(0.8+Math.random()*0.18);
+}
+function wF(h,cap,clim,ssn){
+  const nt=(h<6||h>20)?1.3:0.85;
+  const climF={'coastal':1.3,'island':1.25,'arctic':1.4,'plains':1.2,'mountain':1.1,'desert':0.7,'arid':0.75,'monsoon':1.0,'urban':0.5,'tropical':0.6,'highland':1.0,'temperate':0.9}[clim]||1.0;
+  const ssnF=ssn==='winter'?1.2:ssn==='summer'?0.8:1.0;
+  return cap*(0.22+0.18*Math.sin(h/24*Math.PI*2))*nt*climF*ssnF*(0.7+Math.random()*0.3);
+}
+function hF(h,cap,ssn){
+  if(!cap) return 0;
+  const ssnF=ssn==='winter'?1.15:ssn==='summer'?0.7:0.95;
+  return cap*(0.55+0.2*Math.sin((h-8)/24*Math.PI*2))*ssnF*(0.85+Math.random()*0.15);
+}
+function gF(h,cap){return cap?cap*0.9*(0.93+Math.random()*0.07):0;}
+function tF(h,cap){
+  if(!cap) return 0;
+  return cap*(0.4+0.3*Math.abs(Math.sin(h/12.42*Math.PI*2)))*(0.85+Math.random()*0.15);
+}
+function dF(h,base,pM,ssn){
+  const m=Math.exp(-0.5*((h-9)/2)**2)*0.3;
+  const e=Math.exp(-0.5*((h-20)/2.5)**2)*0.5;
+  const ssnF=ssn==='winter'?1.15:ssn==='summer'?0.95:1.0;
+  return base*(0.58+m+e)*(pM/1.4)*ssnF*(0.92+Math.random()*0.16);
+}
+
+function calc(n,h,ssn){
+  const s=Math.round(sF(h,n.sC,n.climate,ssn));
+  const w=Math.round(wF(h,n.wC,n.climate,ssn));
+  const hy=Math.round(hF(h,n.hC,ssn));
+  const ge=Math.round(gF(h,n.gC));
+  const ti=Math.round(tF(h,n.tC));
+  const tg=s+w+hy+ge+ti;
+  const dm=Math.round(dF(h,n.bD,n.pM,ssn));
+  const bl=tg-dm;
+  const cu=Math.max(0,Math.round(bl*0.3));
+  const sp=Math.round(n.ppa*(dm/(tg||1))*(0.85+Math.random()*0.3));
+  return {s,w,hy,ge,ti,tg,dm,bl,cu,sp};
+}
+
+const el={hr:document.getElementById('hr'),hrV:document.getElementById('hrV'),
+  cards:document.getElementById('cards'),tb:document.getElementById('tbody'),
+  tf:document.getElementById('tfoot'),kp:document.getElementById('kpis'),
+  ssn:document.getElementById('season')};
+let ch1,ch2,ch3,ch4;
+
+function render(){
+  const h=+el.hr.value;const ssn=el.ssn.value;
+  el.hrV.textContent=`${String(h).padStart(2,'0')}:00`;
+  el.cards.innerHTML='';el.tb.innerHTML='';el.kp.innerHTML='';
+  let totG=0,totD=0,totCu=0;
+
+  N.forEach(n=>{
+    const d=calc(n,h,ssn);
+    totG+=d.tg;totD+=d.dm;totCu+=d.cu;
+    const cap=n.sC+n.wC+n.hC+n.gC+n.tC;
+    const cf=d.tg/cap;
+    const bc=d.bl>=0?'var(--color-text-success)':'var(--color-text-danger)';
+    const bdr=d.bl>=0?'#1D9E75':'#D85A30';
+
+    el.cards.innerHTML+=`
+      <div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-left:3px solid ${bdr};border-radius:var(--border-radius-md);padding:7px 9px;">
+        <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">${n.name}</div>
+        <div style="font-size:9px;color:var(--color-text-secondary);margin-bottom:3px;">${n.id} · ${n.reg}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;font-size:10px;">
+          ${d.s?`<div><span style="color:#1D9E75;font-weight:500;">${d.s}</span> S</div>`:''}
+          ${d.w?`<div><span style="color:#378ADD;font-weight:500;">${d.w}</span> W</div>`:''}
+          ${d.hy?`<div><span style="color:#534AB7;font-weight:500;">${d.hy}</span> H</div>`:''}
+          ${d.ge?`<div><span style="color:#639922;font-weight:500;">${d.ge}</span> G</div>`:''}
+          ${d.ti?`<div><span style="color:#BA7517;font-weight:500;">${d.ti}</span> T</div>`:''}
+          <div><span style="color:#D85A30;font-weight:500;">${d.dm}</span> D</div>
+        </div>
+        <div style="font-size:9px;margin-top:2px;display:flex;justify-content:space-between;">
+          <span style="color:${bc};font-weight:500;">${d.bl>=0?'+':''}${d.bl}</span>
+          <span style="color:var(--color-text-secondary);">CF ${(cf*100).toFixed(0)}%</span>
+          <span style="color:var(--color-text-secondary);">${d.sp}G</span>
+        </div>
+      </div>`;
+
+    el.tb.innerHTML+=`<tr style="border-bottom:0.5px solid var(--color-border-tertiary);">
+      <td style="padding:4px 6px;color:var(--color-text-primary);font-weight:500;">${n.name}</td>
+      <td style="padding:4px 6px;color:var(--color-text-secondary);font-size:10px;">${n.reg}</td>
+      <td style="padding:4px 6px;text-align:right;color:#1D9E75;">${d.s}</td>
+      <td style="padding:4px 6px;text-align:right;color:#378ADD;">${d.w}</td>
+      <td style="padding:4px 6px;text-align:right;color:#534AB7;">${d.hy}</td>
+      <td style="padding:4px 6px;text-align:right;color:#639922;">${d.ge}</td>
+      <td style="padding:4px 6px;text-align:right;color:#BA7517;">${d.ti}</td>
+      <td style="padding:4px 6px;text-align:right;font-weight:500;color:var(--color-text-primary);">${d.tg}</td>
+      <td style="padding:4px 6px;text-align:right;color:#D85A30;">${d.dm}</td>
+      <td style="padding:4px 6px;text-align:right;color:${bc};font-weight:500;">${d.bl>=0?'+':''}${d.bl}</td>
+      <td style="padding:4px 6px;text-align:right;color:#D4537E;">${d.cu}</td>
+      <td style="padding:4px 6px;text-align:right;color:var(--color-text-secondary);">${d.sp}</td>
+    </tr>`;
+  });
+
+  el.tf.innerHTML=`<tr style="border-top:1px solid var(--color-border-secondary);font-weight:500;">
+    <td colspan="7" style="padding:5px 6px;color:var(--color-text-primary);">Gaia total</td>
+    <td style="padding:5px 6px;text-align:right;color:var(--color-text-primary);">${totG}</td>
+    <td style="padding:5px 6px;text-align:right;color:#D85A30;">${totD}</td>
+    <td style="padding:5px 6px;text-align:right;color:${totG-totD>=0?'var(--color-text-success)':'var(--color-text-danger)'};">${totG-totD>=0?'+':''}${totG-totD}</td>
+    <td style="padding:5px 6px;text-align:right;color:#D4537E;">${totCu}</td>
+    <td style="padding:5px 6px;text-align:right;color:var(--color-text-secondary);">—</td>
+  </tr>`;
+
+  el.kp.innerHTML=`
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;">
+      <div style="font-size:11px;color:var(--color-text-secondary);">Generation</div>
+      <div style="font-size:18px;font-weight:500;color:var(--color-text-primary);">${(totG/1000).toFixed(1)} GW</div>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;">
+      <div style="font-size:11px;color:var(--color-text-secondary);">Demand</div>
+      <div style="font-size:18px;font-weight:500;color:var(--color-text-primary);">${(totD/1000).toFixed(1)} GW</div>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;">
+      <div style="font-size:11px;color:var(--color-text-secondary);">Curtailment</div>
+      <div style="font-size:18px;font-weight:500;color:#D4537E;">${totCu} MW</div>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;">
+      <div style="font-size:11px;color:var(--color-text-secondary);">Renewable share</div>
+      <div style="font-size:18px;font-weight:500;color:#1D9E75;">100%</div>
+    </div>`;
+  buildCharts(h,ssn);
+}
+
+function buildCharts(h,ssn){
+  const hrs=Array.from({length:24},(_,i)=>i);
+  const tG=hrs.map(hh=>N.reduce((a,n)=>a+calc(n,hh,ssn).tg,0));
+  const tD=hrs.map(hh=>N.reduce((a,n)=>a+calc(n,hh,ssn).dm,0));
+  const tS=hrs.map(hh=>N.reduce((a,n)=>a+calc(n,hh,ssn).s,0));
+  const tW=hrs.map(hh=>N.reduce((a,n)=>a+calc(n,hh,ssn).w,0));
+  const tH=hrs.map(hh=>N.reduce((a,n)=>a+calc(n,hh,ssn).hy,0));
+
+  if(ch1)ch1.destroy();
+  ch1=new Chart(document.getElementById('c1'),{
+    type:'line',data:{labels:hrs.map(x=>x+':00'),datasets:[
+      {label:'Generation',data:tG,borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,0.08)',fill:true,tension:.3,pointRadius:0,borderWidth:2},
+      {label:'Demand',data:tD,borderColor:'#D85A30',backgroundColor:'rgba(216,90,48,0.08)',fill:true,tension:.3,pointRadius:0,borderWidth:2,borderDash:[5,3]},
+      {label:'Solar',data:tS,borderColor:'#1D9E7544',tension:.3,pointRadius:0,borderWidth:1},
+      {label:'Wind',data:tW,borderColor:'#378ADD44',tension:.3,pointRadius:0,borderWidth:1},
+      {label:'Hydro',data:tH,borderColor:'#534AB744',tension:.3,pointRadius:0,borderWidth:1},
+    ]},options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},
+      scales:{x:{ticks:{color:ts2,maxTicksLimit:12},grid:{color:gc}},
+        y:{ticks:{color:ts2,callback:v=>(v/1000).toFixed(1)+'GW'},grid:{color:gc}}}}
+  });
+
+  const lbl=N.map(n=>n.name);
+  if(ch2)ch2.destroy();
+  ch2=new Chart(document.getElementById('c2'),{
+    type:'bar',data:{labels:lbl,datasets:[
+      {label:'Solar',data:N.map(n=>calc(n,h,ssn).s),backgroundColor:'#1D9E75CC'},
+      {label:'Wind',data:N.map(n=>calc(n,h,ssn).w),backgroundColor:'#378ADDCC'},
+      {label:'Hydro',data:N.map(n=>calc(n,h,ssn).hy),backgroundColor:'#534AB7CC'},
+      {label:'Geo',data:N.map(n=>calc(n,h,ssn).ge),backgroundColor:'#639922CC'},
+      {label:'Tidal',data:N.map(n=>calc(n,h,ssn).ti),backgroundColor:'#BA7517CC'},
+    ]},options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},
+      scales:{x:{stacked:true,ticks:{color:ts2,font:{size:9},maxRotation:60},grid:{display:false}},
+        y:{stacked:true,ticks:{color:ts2,callback:v=>v+'MW'},grid:{color:gc}}}}
+  });
+
+  if(ch3)ch3.destroy();
+  ch3=new Chart(document.getElementById('c3'),{
+    type:'bar',data:{labels:lbl,datasets:[
+      {label:'Capacity',data:N.map(n=>n.sC+n.wC+n.hC+n.gC+n.tC),backgroundColor:'#534AB766',borderColor:'#534AB7',borderWidth:1},
+      {label:'Demand',data:N.map(n=>calc(n,h,ssn).dm),backgroundColor:'#D85A3066',borderColor:'#D85A30',borderWidth:1},
+    ]},options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},
+      scales:{x:{ticks:{color:ts2,font:{size:9},maxRotation:60},grid:{display:false}},
+        y:{ticks:{color:ts2,callback:v=>v+'MW'},grid:{color:gc}}}}
+  });
+
+  const rv=N.map(n=>{const d=calc(n,h,ssn);return{r:Math.round(d.tg*n.ppa/1000),c:Math.round(d.cu*n.ppa/1000)};});
+  if(ch4)ch4.destroy();
+  ch4=new Chart(document.getElementById('c4'),{
+    type:'bar',data:{labels:lbl,datasets:[
+      {label:'Revenue',data:rv.map(x=>x.r),backgroundColor:'#1D9E75CC'},
+      {label:'Curtailment',data:rv.map(x=>-x.c),backgroundColor:'#D4537ECC'},
+    ]},options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>(i.raw<0?'-':'')+(Math.abs(i.raw))+'K Gil/h'}}},
+      scales:{x:{ticks:{color:ts2,font:{size:9},maxRotation:60},grid:{display:false}},
+        y:{ticks:{color:ts2,callback:v=>v+'K'},grid:{color:gc}}}}
+  });
+}
+
+el.hr.addEventListener('input',render);
+el.ssn.addEventListener('change',render);
+let playing=false,iv;
+document.getElementById('pBtn').addEventListener('click',function(){
+  playing=!playing;this.textContent=playing?'Pause':'Play';
+  if(playing){iv=setInterval(()=>{let v=+el.hr.value+1;if(v>23)v=0;el.hr.value=v;render();},600);}
+  else clearInterval(iv);
+});
+render();
+</script>

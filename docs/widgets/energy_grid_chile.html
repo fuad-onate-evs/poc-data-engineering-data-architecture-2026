@@ -1,0 +1,310 @@
+
+<h2 class="sr-only">Interactive simulation of 12 renewable energy grid nodes across Chile from Arica to Aysén with generation, demand, and dispatch data</h2>
+<div style="padding:0.5rem 0;">
+
+<div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px;font-size:12px;color:var(--color-text-secondary);">
+  <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#1D9E75"></span>Solar</span>
+  <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#378ADD"></span>Wind / Eólica</span>
+  <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#534AB7"></span>Hydro / Hidro</span>
+  <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#639922"></span>Geothermal / Geotérmica</span>
+  <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#D85A30"></span>Demand / Demanda</span>
+  <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#D4537E"></span>Curtailment</span>
+</div>
+
+<div style="margin-bottom:10px;display:flex;gap:12px;align-items:center;">
+  <label style="font-size:13px;color:var(--color-text-secondary);">Hour / Hora</label>
+  <input type="range" min="0" max="23" value="12" id="hr" style="flex:1;" step="1"/>
+  <span id="hrV" style="font-size:14px;font-weight:500;min-width:50px;">12:00</span>
+  <button id="pBtn" style="font-size:12px;padding:4px 12px;">Play</button>
+  <select id="season" style="font-size:12px;padding:4px 8px;">
+    <option value="summer">Summer / Verano</option>
+    <option value="winter">Winter / Invierno</option>
+    <option value="equinox" selected>Equinox / Equinoccio</option>
+  </select>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:10px;">
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;" id="cards1"></div>
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;" id="cards2"></div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:14px;" id="kpis"></div>
+
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:14px;">
+  <div>
+    <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin:0 0 6px;">System generation vs demand (24h)</p>
+    <div style="position:relative;width:100%;height:220px;"><canvas id="c1" role="img" aria-label="Line chart: total generation vs demand 24h">Gen vs demand.</canvas></div>
+  </div>
+  <div>
+    <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin:0 0 6px;">Generation mix by node at selected hour</p>
+    <div style="position:relative;width:100%;height:220px;"><canvas id="c2" role="img" aria-label="Stacked bar: generation mix per node">Mix per node.</canvas></div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:14px;">
+  <div>
+    <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin:0 0 6px;">Latitude profile — capacity vs demand (N→S)</p>
+    <div style="position:relative;width:100%;height:200px;"><canvas id="c3" role="img" aria-label="Bar chart: installed capacity vs demand by latitude">Lat profile.</canvas></div>
+  </div>
+  <div>
+    <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin:0 0 6px;">Revenue & curtailment cost ($/h per node)</p>
+    <div style="position:relative;width:100%;height:200px;"><canvas id="c4" role="img" aria-label="Bar chart: revenue and curtailment cost per node">Revenue.</canvas></div>
+  </div>
+</div>
+
+<div>
+  <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin:0 0 6px;">Grid dispatch table / Tabla de despacho</p>
+  <div style="overflow-x:auto;">
+    <table style="width:100%;font-size:11px;border-collapse:collapse;">
+      <thead><tr style="border-bottom:0.5px solid var(--color-border-tertiary);">
+        <th style="text-align:left;padding:5px 6px;color:var(--color-text-secondary);font-weight:500;">Node</th>
+        <th style="text-align:left;padding:5px 6px;color:var(--color-text-secondary);font-weight:500;">Region</th>
+        <th style="text-align:right;padding:5px 6px;color:#1D9E75;font-weight:500;">Solar</th>
+        <th style="text-align:right;padding:5px 6px;color:#378ADD;font-weight:500;">Wind</th>
+        <th style="text-align:right;padding:5px 6px;color:#534AB7;font-weight:500;">Hydro</th>
+        <th style="text-align:right;padding:5px 6px;color:#639922;font-weight:500;">Geo</th>
+        <th style="text-align:right;padding:5px 6px;font-weight:500;color:var(--color-text-primary);">Gen MW</th>
+        <th style="text-align:right;padding:5px 6px;color:#D85A30;font-weight:500;">Dem MW</th>
+        <th style="text-align:right;padding:5px 6px;font-weight:500;color:var(--color-text-primary);">Bal MW</th>
+        <th style="text-align:right;padding:5px 6px;color:#D4537E;font-weight:500;">Curt MW</th>
+        <th style="text-align:right;padding:5px 6px;color:var(--color-text-secondary);font-weight:500;">$/MWh</th>
+        <th style="text-align:right;padding:5px 6px;color:var(--color-text-secondary);font-weight:500;">tCO₂e/h</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+      <tfoot id="tfoot"></tfoot>
+    </table>
+  </div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const cs=getComputedStyle(document.documentElement);
+const tp=cs.getPropertyValue('--color-text-primary').trim()||'#222';
+const ts2=cs.getPropertyValue('--color-text-secondary').trim()||'#888';
+const gc='rgba(128,128,128,0.12)';
+
+const N=[
+  {id:'N01',name:'Arica',         reg:'Extremo Norte',lat:-18.48,sC:280,wC:40, hC:0,  gC:0, bD:90,  pM:1.3,ppa:40},
+  {id:'N02',name:'Iquique',       reg:'Tarapacá',     lat:-20.21,sC:350,wC:60, hC:0,  gC:0, bD:150, pM:1.3,ppa:41},
+  {id:'N03',name:'Calama',        reg:'Antofagasta',  lat:-22.46,sC:500,wC:50, hC:0,  gC:30,bD:600, pM:1.1,ppa:44},
+  {id:'N04',name:'Atacama',       reg:'Norte Grande',  lat:-27.07,sC:420,wC:90, hC:0,  gC:20,bD:200, pM:1.4,ppa:42},
+  {id:'N05',name:'Coquimbo',      reg:'Norte Chico',   lat:-29.95,sC:200,wC:320,hC:40, gC:0, bD:180, pM:1.5,ppa:45},
+  {id:'N06',name:'Valparaíso',    reg:'Central Costa', lat:-33.05,sC:120,wC:150,hC:80, gC:0, bD:450, pM:1.5,ppa:50},
+  {id:'N07',name:'Santiago',      reg:'Metropolitana', lat:-33.45,sC:150,wC:60, hC:200,gC:0, bD:1400,pM:1.6,ppa:52},
+  {id:'N08',name:'Rancagua',      reg:"O'Higgins",     lat:-34.17,sC:100,wC:80, hC:250,gC:0, bD:350, pM:1.3,ppa:46},
+  {id:'N09',name:'Concepción',    reg:'Biobío',        lat:-36.82,sC:60, wC:240,hC:380,gC:0, bD:520, pM:1.3,ppa:38},
+  {id:'N10',name:'Temuco',        reg:'Araucanía',     lat:-38.74,sC:30, wC:180,hC:300,gC:0, bD:250, pM:1.4,ppa:37},
+  {id:'N11',name:'Puerto Montt',  reg:'Los Lagos',     lat:-41.47,sC:20, wC:200,hC:520,gC:0, bD:200, pM:1.4,ppa:35},
+  {id:'N12',name:'Coyhaique',     reg:'Aysén',         lat:-45.57,sC:10, wC:160,hC:600,gC:0, bD:80,  pM:1.2,ppa:33},
+];
+
+function sF(h,cap,season){
+  if(h<5||h>20) return 0;
+  const pk=season==='summer'?13.5:season==='winter'?12.5:13;
+  const sp=season==='summer'?4:season==='winter'?3:3.5;
+  const eff=season==='summer'?1.0:season==='winter'?0.6:0.85;
+  return cap*Math.exp(-0.5*((h-pk)/sp)**2)*eff*(0.82+Math.random()*0.16);
+}
+function wF(h,cap,lat,season){
+  const nt=(h<6||h>20)?1.3:0.85;
+  const lf=Math.abs(lat)>35?1.25:Math.abs(lat)>30?1.0:0.75;
+  const sf=season==='winter'?1.2:season==='summer'?0.8:1.0;
+  return cap*(0.22+0.18*Math.sin(h/24*Math.PI*2))*nt*lf*sf*(0.72+Math.random()*0.28);
+}
+function hF(h,cap,season){
+  if(!cap) return 0;
+  const sf=season==='winter'?1.15:season==='summer'?0.75:0.95;
+  return cap*(0.55+0.2*Math.sin((h-8)/24*Math.PI*2))*sf*(0.88+Math.random()*0.12);
+}
+function gF(h,cap){return cap?cap*0.9*(0.95+Math.random()*0.05):0;}
+function dF(h,base,pM,season){
+  const m=Math.exp(-0.5*((h-9)/2)**2)*0.3;
+  const e=Math.exp(-0.5*((h-20)/2.5)**2)*0.5;
+  const sf=season==='winter'?1.15:season==='summer'?0.9:1.0;
+  return base*(0.58+m+e)*(pM/1.4)*sf*(0.93+Math.random()*0.14);
+}
+
+function calc(n,h,ssn){
+  const s=Math.round(sF(h,n.sC,ssn));
+  const w=Math.round(wF(h,n.wC,n.lat,ssn));
+  const hy=Math.round(hF(h,n.hC,ssn));
+  const ge=Math.round(gF(h,n.gC));
+  const tg=s+w+hy+ge;
+  const dm=Math.round(dF(h,n.bD,n.pM,ssn));
+  const bl=tg-dm;
+  const cu=Math.max(0,Math.round(bl*0.3));
+  const sp=Math.round(n.ppa*(dm/(tg||1))*(0.85+Math.random()*0.3));
+  const co2=Math.round(tg*0.42);
+  return {s,w,hy,ge,tg,dm,bl,cu,sp,co2};
+}
+
+const el={hr:document.getElementById('hr'),hrV:document.getElementById('hrV'),
+  c1:document.getElementById('cards1'),c2:document.getElementById('cards2'),
+  tb:document.getElementById('tbody'),tf:document.getElementById('tfoot'),
+  kp:document.getElementById('kpis'),ssn:document.getElementById('season')};
+let ch1,ch2,ch3,ch4;
+
+function render(){
+  const h=+el.hr.value;const ssn=el.ssn.value;
+  el.hrV.textContent=`${String(h).padStart(2,'0')}:00`;
+  el.c1.innerHTML='';el.c2.innerHTML='';el.tb.innerHTML='';el.kp.innerHTML='';
+  let totG=0,totD=0,totCu=0,totCo2=0;
+
+  N.forEach((n,i)=>{
+    const d=calc(n,h,ssn);
+    totG+=d.tg;totD+=d.dm;totCu+=d.cu;totCo2+=d.co2;
+    const cf=d.tg/(n.sC+n.wC+n.hC+n.gC);
+    const bc=d.bl>=0?'var(--color-text-success)':'var(--color-text-danger)';
+    const card=`
+      <div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-left:3px solid ${d.bl>=0?'#1D9E75':'#D85A30'};border-radius:var(--border-radius-md);padding:8px 10px;">
+        <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">${n.name}</div>
+        <div style="font-size:10px;color:var(--color-text-secondary);margin-bottom:4px;">${n.id} · ${n.reg}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;font-size:10px;">
+          <div><span style="color:#1D9E75;font-weight:500;">${d.s}</span> S</div>
+          <div><span style="color:#378ADD;font-weight:500;">${d.w}</span> W</div>
+          <div><span style="color:#534AB7;font-weight:500;">${d.hy}</span> H</div>
+          <div><span style="color:#639922;font-weight:500;">${d.ge}</span> G</div>
+        </div>
+        <div style="font-size:10px;margin-top:3px;display:flex;justify-content:space-between;">
+          <span style="color:#D85A30;">${d.dm}MW dem</span>
+          <span style="color:${bc};font-weight:500;">${d.bl>=0?'+':''}${d.bl}</span>
+          <span style="color:var(--color-text-secondary);">CF ${(cf*100).toFixed(0)}%</span>
+        </div>
+      </div>`;
+    (i<6?el.c1:el.c2).innerHTML+=card;
+
+    el.tb.innerHTML+=`<tr style="border-bottom:0.5px solid var(--color-border-tertiary);">
+      <td style="padding:4px 6px;color:var(--color-text-primary);font-weight:500;">${n.name}</td>
+      <td style="padding:4px 6px;color:var(--color-text-secondary);font-size:10px;">${n.reg}</td>
+      <td style="padding:4px 6px;text-align:right;color:#1D9E75;">${d.s}</td>
+      <td style="padding:4px 6px;text-align:right;color:#378ADD;">${d.w}</td>
+      <td style="padding:4px 6px;text-align:right;color:#534AB7;">${d.hy}</td>
+      <td style="padding:4px 6px;text-align:right;color:#639922;">${d.ge}</td>
+      <td style="padding:4px 6px;text-align:right;font-weight:500;color:var(--color-text-primary);">${d.tg}</td>
+      <td style="padding:4px 6px;text-align:right;color:#D85A30;">${d.dm}</td>
+      <td style="padding:4px 6px;text-align:right;color:${bc};font-weight:500;">${d.bl>=0?'+':''}${d.bl}</td>
+      <td style="padding:4px 6px;text-align:right;color:#D4537E;">${d.cu}</td>
+      <td style="padding:4px 6px;text-align:right;color:var(--color-text-secondary);">$${d.sp}</td>
+      <td style="padding:4px 6px;text-align:right;color:var(--color-text-secondary);">${d.co2}</td>
+    </tr>`;
+  });
+
+  el.tf.innerHTML=`<tr style="border-top:1px solid var(--color-border-secondary);font-weight:500;">
+    <td colspan="6" style="padding:5px 6px;color:var(--color-text-primary);">System total</td>
+    <td style="padding:5px 6px;text-align:right;color:var(--color-text-primary);">${totG}</td>
+    <td style="padding:5px 6px;text-align:right;color:#D85A30;">${totD}</td>
+    <td style="padding:5px 6px;text-align:right;color:${totG-totD>=0?'var(--color-text-success)':'var(--color-text-danger)'};">${totG-totD>=0?'+':''}${totG-totD}</td>
+    <td style="padding:5px 6px;text-align:right;color:#D4537E;">${totCu}</td>
+    <td style="padding:5px 6px;text-align:right;color:var(--color-text-secondary);">—</td>
+    <td style="padding:5px 6px;text-align:right;color:var(--color-text-secondary);">${totCo2}</td>
+  </tr>`;
+
+  const pct=totG>0?Math.round((totG/(totG+totD)*2)*100):0;
+  el.kp.innerHTML=`
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;">
+      <div style="font-size:11px;color:var(--color-text-secondary);">System generation</div>
+      <div style="font-size:18px;font-weight:500;color:var(--color-text-primary);">${(totG/1000).toFixed(1)} GW</div>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;">
+      <div style="font-size:11px;color:var(--color-text-secondary);">System demand</div>
+      <div style="font-size:18px;font-weight:500;color:var(--color-text-primary);">${(totD/1000).toFixed(1)} GW</div>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;">
+      <div style="font-size:11px;color:var(--color-text-secondary);">Curtailment</div>
+      <div style="font-size:18px;font-weight:500;color:#D4537E;">${totCu} MW</div>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;">
+      <div style="font-size:11px;color:var(--color-text-secondary);">Carbon offset</div>
+      <div style="font-size:18px;font-weight:500;color:#1D9E75;">${(totCo2/1000).toFixed(1)} ktCO₂e/h</div>
+    </div>`;
+
+  buildCharts(h,ssn);
+}
+
+function buildCharts(h,ssn){
+  const hrs=Array.from({length:24},(_,i)=>i);
+  const tG=hrs.map(hh=>N.reduce((a,n)=>a+calc(n,hh,ssn).tg,0));
+  const tD=hrs.map(hh=>N.reduce((a,n)=>a+calc(n,hh,ssn).dm,0));
+  const tS=hrs.map(hh=>N.reduce((a,n)=>a+calc(n,hh,ssn).s,0));
+  const tW=hrs.map(hh=>N.reduce((a,n)=>a+calc(n,hh,ssn).w,0));
+  const tH=hrs.map(hh=>N.reduce((a,n)=>a+calc(n,hh,ssn).hy,0));
+
+  if(ch1)ch1.destroy();
+  ch1=new Chart(document.getElementById('c1'),{
+    type:'line',
+    data:{labels:hrs.map(x=>x+':00'),datasets:[
+      {label:'Generation',data:tG,borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,0.08)',fill:true,tension:.3,pointRadius:0,borderWidth:2},
+      {label:'Demand',data:tD,borderColor:'#D85A30',backgroundColor:'rgba(216,90,48,0.08)',fill:true,tension:.3,pointRadius:0,borderWidth:2,borderDash:[5,3]},
+      {label:'Solar',data:tS,borderColor:'#1D9E7555',tension:.3,pointRadius:0,borderWidth:1},
+      {label:'Wind',data:tW,borderColor:'#378ADD55',tension:.3,pointRadius:0,borderWidth:1},
+      {label:'Hydro',data:tH,borderColor:'#534AB755',tension:.3,pointRadius:0,borderWidth:1},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},
+      scales:{x:{ticks:{color:ts2,maxTicksLimit:12},grid:{color:gc}},
+        y:{ticks:{color:ts2,callback:v=>(v/1000).toFixed(1)+'GW'},grid:{color:gc}}}}
+  });
+
+  const lbl=N.map(n=>n.name);
+  const sD=N.map(n=>calc(n,h,ssn).s);
+  const wD=N.map(n=>calc(n,h,ssn).w);
+  const hD=N.map(n=>calc(n,h,ssn).hy);
+  const gD=N.map(n=>calc(n,h,ssn).ge);
+
+  if(ch2)ch2.destroy();
+  ch2=new Chart(document.getElementById('c2'),{
+    type:'bar',
+    data:{labels:lbl,datasets:[
+      {label:'Solar',data:sD,backgroundColor:'#1D9E75CC'},
+      {label:'Wind',data:wD,backgroundColor:'#378ADDCC'},
+      {label:'Hydro',data:hD,backgroundColor:'#534AB7CC'},
+      {label:'Geo',data:gD,backgroundColor:'#639922CC'},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},
+      scales:{x:{stacked:true,ticks:{color:ts2,font:{size:9},maxRotation:60},grid:{display:false}},
+        y:{stacked:true,ticks:{color:ts2,callback:v=>v+'MW'},grid:{color:gc}}}}
+  });
+
+  if(ch3)ch3.destroy();
+  ch3=new Chart(document.getElementById('c3'),{
+    type:'bar',
+    data:{labels:lbl,datasets:[
+      {label:'Installed cap',data:N.map(n=>n.sC+n.wC+n.hC+n.gC),backgroundColor:'#534AB766',borderColor:'#534AB7',borderWidth:1},
+      {label:'Demand',data:N.map(n=>calc(n,h,ssn).dm),backgroundColor:'#D85A3066',borderColor:'#D85A30',borderWidth:1},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},
+      scales:{x:{ticks:{color:ts2,font:{size:9},maxRotation:60},grid:{display:false}},
+        y:{ticks:{color:ts2,callback:v=>v+'MW'},grid:{color:gc}}}}
+  });
+
+  const rv=N.map(n=>{const d=calc(n,h,ssn);return{r:Math.round(d.tg*n.ppa/1000),c:Math.round(d.cu*n.ppa/1000)};});
+  if(ch4)ch4.destroy();
+  ch4=new Chart(document.getElementById('c4'),{
+    type:'bar',
+    data:{labels:lbl,datasets:[
+      {label:'Revenue $/h',data:rv.map(x=>x.r),backgroundColor:'#1D9E75CC'},
+      {label:'Curtailment cost',data:rv.map(x=>-x.c),backgroundColor:'#D4537ECC'},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>(i.raw<0?'-':'')+'$'+Math.abs(i.raw)+'K/h'}}},
+      scales:{x:{ticks:{color:ts2,font:{size:9},maxRotation:60},grid:{display:false}},
+        y:{ticks:{color:ts2,callback:v=>'$'+v+'K'},grid:{color:gc}}}}
+  });
+}
+
+el.hr.addEventListener('input',render);
+el.ssn.addEventListener('change',render);
+
+let playing=false,iv;
+document.getElementById('pBtn').addEventListener('click',function(){
+  playing=!playing;this.textContent=playing?'Pause':'Play';
+  if(playing){iv=setInterval(()=>{let v=+el.hr.value+1;if(v>23)v=0;el.hr.value=v;render();},600);}
+  else clearInterval(iv);
+});
+
+render();
+</script>

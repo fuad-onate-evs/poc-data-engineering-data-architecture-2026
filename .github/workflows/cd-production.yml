@@ -1,0 +1,17 @@
+# STUB — fleshed out in Sprint 4 (US-4.2).
+# Triggers on merge to main. Strict validation, DAB deploy, approval gate.
+name: cd-production
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-prd:
+    runs-on: ubuntu-latest
+    environment: production # GitHub environment with manual approval
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - run: uv python install 3.12
+      - run: uv sync
+      # TODO Sprint 4: strict source validation, DAB deploy via databricks-cli
