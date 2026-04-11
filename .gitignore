@@ -29,7 +29,8 @@ transform/dbt_packages/
 .DS_Store
 Thumbs.db
 
-# LLM tooling — alternate context filenames (symlinks to AGENTS.md)
+# LLM tooling — alternate context filenames (symlinks to LLM.md)
+AGENTS.md
 CLAUDE.md
 .cursorrules
 .cursor/

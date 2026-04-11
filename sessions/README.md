@@ -6,7 +6,7 @@
 
 | Date | Session | Headline |
 |---|---|---|
-| 2026-04-10 | [Bootstrap](2026-04-10-bootstrap.md) | Materialized scaffold from chat artifacts, set up uv project, wrote README + ONBOARDING + AGENTS, initialized git |
+| 2026-04-10 | [Bootstrap](2026-04-10-bootstrap.md) | Materialized scaffold from chat artifacts, set up uv project, wrote README + ONBOARDING + LLM.md, initialized git |
 
 ---
 
@@ -51,12 +51,12 @@ Keep sessions focused on **state changes and decisions**, not narration. Future 
 | Location | Purpose | Lifetime |
 |---|---|---|
 | `sessions/` | Chronological log of *what was done when* | Permanent, append-only |
-| [../AGENTS.md](../AGENTS.md) | Current architecture, conventions, Done/TODO | Mutable, always reflects HEAD |
+| [../LLM.md](../LLM.md) | Current architecture, conventions, Done/TODO | Mutable, always reflects HEAD |
 | [../docs/ONBOARDING.md](../docs/ONBOARDING.md) | First-day team walkthrough | Stable, rarely changes |
 | [../docs/poc-agile-plan-energy.md](../docs/poc-agile-plan-energy.md) | Sprint plan, ownership, SP | Stable through the sprint |
 | [../README.md](../README.md) | Public-facing project overview | Stable, marketing-grade |
 
-If you're tempted to put information in `sessions/` that's actually about the project's *current* state (not what changed), put it in `AGENTS.md` instead.
+If you're tempted to put information in `sessions/` that's actually about the project's *current* state (not what changed), put it in `LLM.md` instead.
 
 ---
 
