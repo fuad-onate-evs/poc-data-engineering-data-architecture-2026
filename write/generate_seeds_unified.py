@@ -38,10 +38,10 @@ PIPELINE: Chile (source of truth) → Chile seeds → FF seeds (mapped)
   └──────────────────────┘                                └──────────────────────┘
 
 Run:
-  python ingestion/generate_seeds_unified.py --mode chile    # Only Chile
-  python ingestion/generate_seeds_unified.py --mode ff       # Only FF
-  python ingestion/generate_seeds_unified.py --mode both     # Both (default)
-  python ingestion/generate_seeds_unified.py --mode both --days 30  # 30 days
+  python write/generate_seeds_unified.py --mode chile    # Only Chile
+  python write/generate_seeds_unified.py --mode ff       # Only FF
+  python write/generate_seeds_unified.py --mode both     # Both (default)
+  python write/generate_seeds_unified.py --mode both --days 30  # 30 days
 """
 
 import argparse

@@ -45,7 +45,7 @@ with DAG(
     generate_seeds = BashOperator(
         task_id="generate_seeds",
         bash_command=(
-            f"cd {PROJECT_DIR} && python ingestion/generate_seeds_unified.py --mode both --days 7"
+            f"cd {PROJECT_DIR} && python write/generate_seeds_unified.py --mode both --days 7"
         ),
     )
 
@@ -54,7 +54,7 @@ with DAG(
         task_id="create_kafka_topics",
         bash_command=(
             f"cd {PROJECT_DIR} && "
-            f"python -m ingestion.producers.seed_producer --bootstrap {BOOTSTRAP} --create-topics"
+            f"python -m write.producers.seed_producer --bootstrap {BOOTSTRAP} --create-topics"
         ),
     )
 
@@ -64,7 +64,7 @@ with DAG(
             task_id="publish_chile",
             bash_command=(
                 f"cd {PROJECT_DIR} && "
-                f"python -m ingestion.producers.seed_producer "
+                f"python -m write.producers.seed_producer "
                 f"--bootstrap {BOOTSTRAP} --dataset chile"
             ),
         )
@@ -72,7 +72,7 @@ with DAG(
             task_id="publish_ff",
             bash_command=(
                 f"cd {PROJECT_DIR} && "
-                f"python -m ingestion.producers.seed_producer "
+                f"python -m write.producers.seed_producer "
                 f"--bootstrap {BOOTSTRAP} --dataset ff"
             ),
         )
@@ -82,7 +82,7 @@ with DAG(
         task_id="consume_to_bronze",
         bash_command=(
             f"cd {PROJECT_DIR} && "
-            f"python -m ingestion.consumers.bronze_writer "
+            f"python -m write.consumers.bronze_writer "
             f"--bootstrap {BOOTSTRAP} --mode databricks-sql "
             f"--batch-size 500 --timeout 60"
         ),

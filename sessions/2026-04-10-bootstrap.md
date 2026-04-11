@@ -11,7 +11,7 @@
 
 1. **Validated the project context.** Found a major gap between docs and disk: project context doc claimed a fully built scaffold, but only loose root-level files existed (no git, ~30 WSL2 metadata files, two unextracted ZIPs containing competing stack iterations).
 2. **Resolved the stack conflict.** Two ZIPs reflected two different architectures: `poc-data-eng.zip` (older, Trino + MinIO + Iceberg, generic events) vs `bronze-pipeline.zip` (newer, Databricks + Delta Lake, energy domain). Confirmed **Databricks-only** with the user; dropped the Trino/MinIO/Iceberg artifacts.
-3. **Materialized the scaffold** from `bronze-pipeline.zip` into the documented directory layout: `ingestion/{config,producers,consumers,schemas}`, `dags/`, `transform/{seeds,seeds_ff}`, `tests/`, `envs/`, `.github/workflows/`, `docs/{pm,widgets}`.
+3. **Materialized the scaffold** from `bronze-pipeline.zip` into the documented directory layout: `ingestion/{config,producers,consumers,schemas}`, `dags/`, `transform/{seeds,seeds_ff}`, `tests/`, `envs/`, `.github/workflows/`, `docs/{pm,widgets}`. (`ingestion/` was later renamed to `write/` — see [2026-04-11-llm-write-trello.md](2026-04-11-llm-write-trello.md).)
 4. **Bootstrapped project hygiene** with `uv`: `pyproject.toml` with runtime + dev deps (dbt-databricks, airflow, confluent-kafka, GE, databricks SDK, polars, pandas, pyarrow + ruff, pytest, pre-commit, mypy, sqlfluff). Added `.python-version`, `.gitignore`, `.editorconfig`, `.pre-commit-config.yaml`.
 5. **Authored env templates** for dev/qa/prd with realistic DQ thresholds (lenient → strict).
 6. **Wrote CI/CD skeletons** (`ci-dev-qa.yml`, `cd-production.yml`) — lint + smoke tests now, full pipeline TODO Sprint 4.
@@ -41,8 +41,8 @@
 ### Immediate
 
 1. **Resolve `energy_ingestion_dag.py` env-awareness gap.** Currently hardcoded to `databricks-sql` mode + `kafka:9092` despite the project context claiming env-aware switching. Make it read `ENV` from settings.
-2. **Build `ingestion/validators/source_validator.py`** (Sprint 2 / US-2.1). 9 pre-ingestion checks: file exists, schema, row counts, node coverage, uniqueness, ranges, timestamps, cross-ref, energy balance.
-3. **Build `ingestion/dq/bronze_checks.py`** (Sprint 2 / US-2.1). Offline (CSV) + online (Databricks) modes, env-aware thresholds.
+2. **Build `write/validators/source_validator.py`** (Sprint 2 / US-2.1). 9 pre-ingestion checks: file exists, schema, row counts, node coverage, uniqueness, ranges, timestamps, cross-ref, energy balance.
+3. **Build `write/dq/bronze_checks.py`** (Sprint 2 / US-2.1). Offline (CSV) + online (Databricks) modes, env-aware thresholds.
 
 ### Sprint 2-3 work
 
@@ -78,10 +78,10 @@
 | 1 | [../LLM.md](../LLM.md) | Architecture, conventions, current Done/TODO |
 | 2 | [../docs/ONBOARDING.md](../docs/ONBOARDING.md) | Setup + commands + troubleshooting |
 | 3 | [../docs/poc-agile-plan-energy.md](../docs/poc-agile-plan-energy.md) | Sprint plan with story-point ownership |
-| 4 | [../ingestion/consumers/bronze_writer.py](../ingestion/consumers/bronze_writer.py) | Core consumer with 3 modes |
-| 5 | [../ingestion/producers/seed_producer.py](../ingestion/producers/seed_producer.py) | CSV → Kafka producer |
-| 6 | [../ingestion/config/settings.py](../ingestion/config/settings.py) | Centralized env-aware config |
-| 7 | [../ingestion/schemas/bronze_ddl.sql](../ingestion/schemas/bronze_ddl.sql) | Bronze table DDL |
+| 4 | [../write/consumers/bronze_writer.py](../write/consumers/bronze_writer.py) | Core consumer with 3 modes |
+| 5 | [../write/producers/seed_producer.py](../write/producers/seed_producer.py) | CSV → Kafka producer |
+| 6 | [../write/config/settings.py](../write/config/settings.py) | Centralized env-aware config |
+| 7 | [../write/schemas/bronze_ddl.sql](../write/schemas/bronze_ddl.sql) | Bronze table DDL |
 | 8 | [../dags/energy_ingestion_dag.py](../dags/energy_ingestion_dag.py) | Airflow DAG (env-awareness TODO) |
 
 ---

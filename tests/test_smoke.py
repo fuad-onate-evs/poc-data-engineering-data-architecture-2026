@@ -11,10 +11,10 @@ import pytest
 ROOT = Path(__file__).parent.parent
 
 MODULES = [
-    "ingestion/generate_seeds_unified.py",
-    "ingestion/config/settings.py",
-    "ingestion/producers/seed_producer.py",
-    "ingestion/consumers/bronze_writer.py",
+    "write/generate_seeds_unified.py",
+    "write/config/settings.py",
+    "write/producers/seed_producer.py",
+    "write/consumers/bronze_writer.py",
     "dags/energy_ingestion_dag.py",
 ]
 

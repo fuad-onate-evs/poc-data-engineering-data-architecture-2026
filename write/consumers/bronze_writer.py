@@ -9,9 +9,9 @@ Two write modes:
   2. spark: Uses Databricks Connect / PySpark (cluster)
 
 Usage:
-    python -m ingestion.consumers.bronze_writer --mode databricks-sql
-    python -m ingestion.consumers.bronze_writer --mode spark
-    python -m ingestion.consumers.bronze_writer --mode local-delta  # local testing
+    python -m write.consumers.bronze_writer --mode databricks-sql
+    python -m write.consumers.bronze_writer --mode spark
+    python -m write.consumers.bronze_writer --mode local-delta  # local testing
 """
 
 import argparse

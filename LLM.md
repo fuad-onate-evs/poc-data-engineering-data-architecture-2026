@@ -56,7 +56,7 @@ poc-data-eng/
 ├── .github/workflows/
 │   ├── ci-dev-qa.yml               # Stub: lint + smoke tests on PR
 │   └── cd-production.yml           # Stub: DAB deploy with approval gate
-├── ingestion/
+├── write/                          # ingest/produce/consume into Bronze
 │   ├── generate_seeds_unified.py   # Chile (real SEN) + FF (mapped + jitter)
 │   ├── config/settings.py          # KafkaConfig, DatabricksConfig, AppConfig
 │   ├── producers/seed_producer.py  # CSV → Kafka topics
@@ -89,14 +89,14 @@ uv run pre-commit install --hook-type commit-msg
 cp .env.example .env
 
 # ── Generate seed data ──
-uv run python ingestion/generate_seeds_unified.py --mode both --days 7
-uv run python ingestion/generate_seeds_unified.py --mode chile --days 30  # prd volume
+uv run python write/generate_seeds_unified.py --mode both --days 7
+uv run python write/generate_seeds_unified.py --mode chile --days 30  # prd volume
 
 # ── Kafka produce + consume ──
-uv run python -m ingestion.producers.seed_producer --create-topics --dataset chile
-uv run python -m ingestion.producers.seed_producer --dataset ff
-uv run python -m ingestion.consumers.bronze_writer --mode local-delta --timeout 30      # dev
-uv run python -m ingestion.consumers.bronze_writer --mode databricks-sql --timeout 60   # qa/prd
+uv run python -m write.producers.seed_producer --create-topics --dataset chile
+uv run python -m write.producers.seed_producer --dataset ff
+uv run python -m write.consumers.bronze_writer --mode local-delta --timeout 30      # dev
+uv run python -m write.consumers.bronze_writer --mode databricks-sql --timeout 60   # qa/prd
 
 # ── Lint, format, test ──
 uv run ruff check .
@@ -163,8 +163,8 @@ Chile is the source of truth. FF nodes diverge via:
 
 ### TODO (deferred to next sessions)
 
-- [ ] Source validator (`ingestion/validators/source_validator.py`) — Sprint 2
-- [ ] Bronze DQ checks (`ingestion/dq/bronze_checks.py`) — Sprint 2
+- [ ] Source validator (`write/validators/source_validator.py`) — Sprint 2
+- [ ] Bronze DQ checks (`write/dq/bronze_checks.py`) — Sprint 2
 - [ ] Make `energy_ingestion_dag.py` env-aware (currently hardcoded `databricks-sql` mode + `kafka:9092`)
 - [ ] dbt project: `dbt_project.yml`, `profiles.yml` (databricks adapter), Silver staging models, Gold marts
 - [ ] Databricks Asset Bundle (`databricks.yml`) — Sprint 4

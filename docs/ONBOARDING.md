@@ -72,7 +72,7 @@ The `bronze_writer.py` consumer has a `local-delta` mode that writes Parquet to 
 
 ```bash
 # 1. Generate seeds (Chile + FF, 3 days of hourly data)
-uv run python ingestion/generate_seeds_unified.py --mode both --days 3
+uv run python write/generate_seeds_unified.py --mode both --days 3
 
 # 2. Start a local Kafka (optional — only if you want full produce/consume)
 docker run -d --name kafka -p 9092:9092 \
@@ -88,11 +88,11 @@ docker run -d --name kafka -p 9092:9092 \
   confluentinc/cp-kafka:7.7.0
 
 # 3. Create topics + publish seeds
-uv run python -m ingestion.producers.seed_producer --create-topics --dataset chile
-uv run python -m ingestion.producers.seed_producer --dataset ff
+uv run python -m write.producers.seed_producer --create-topics --dataset chile
+uv run python -m write.producers.seed_producer --dataset ff
 
 # 4. Consume → local Delta (writes Parquet under data/bronze/)
-uv run python -m ingestion.consumers.bronze_writer --mode local-delta --timeout 30
+uv run python -m write.consumers.bronze_writer --mode local-delta --timeout 30
 
 # 5. Inspect output
 ls data/bronze/
@@ -105,8 +105,8 @@ ls data/bronze/
 source envs/.env.qa   # or envs/.env.prd
 
 # Then publish + consume normally — bronze_writer picks databricks-sql mode
-uv run python -m ingestion.producers.seed_producer --dataset chile
-uv run python -m ingestion.consumers.bronze_writer --mode databricks-sql --timeout 60
+uv run python -m write.producers.seed_producer --dataset chile
+uv run python -m write.consumers.bronze_writer --mode databricks-sql --timeout 60
 ```
 
 PRD has stricter DQ thresholds (`DQ_FAIL_ON_WARN=true`). Confirm with DE1 before running anything against `energy_catalog` (the prd Unity Catalog).
@@ -139,7 +139,7 @@ uv run pre-commit run --all-files              # everything pre-commit checks
 
 ```
 poc-data-eng/
-├── ingestion/
+├── write/                           # ingest/produce/consume → Bronze
 │   ├── generate_seeds_unified.py    # Chile (real SEN) + FF (mapped) seeds
 │   ├── config/settings.py            # KafkaConfig + DatabricksConfig + AppConfig
 │   ├── producers/seed_producer.py    # CSV → Kafka topics

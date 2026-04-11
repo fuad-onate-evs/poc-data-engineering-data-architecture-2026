@@ -3,9 +3,9 @@ Kafka Producer — Reads seed CSVs and publishes to Bronze topics.
 Simulates real-time ingestion from SCADA/weather/grid sources.
 
 Usage:
-    python -m ingestion.producers.seed_producer --dataset chile
-    python -m ingestion.producers.seed_producer --dataset ff --delay 0.01
-    python -m ingestion.producers.seed_producer --dataset chile --topic scada
+    python -m write.producers.seed_producer --dataset chile
+    python -m write.producers.seed_producer --dataset ff --delay 0.01
+    python -m write.producers.seed_producer --dataset chile --topic scada
 """
 
 import argparse

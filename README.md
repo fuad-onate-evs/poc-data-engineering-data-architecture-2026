@@ -221,12 +221,12 @@ uv run ruff check .           # should be clean
 
 ```bash
 # Generate 3 days of Chile + FF seed data
-uv run python ingestion/generate_seeds_unified.py --mode both --days 3
+uv run python write/generate_seeds_unified.py --mode both --days 3
 
 # (optional) Spin up local Kafka in Docker — see docs/ONBOARDING.md §4
 # Then publish + consume to local Delta files (writes Parquet under data/bronze/)
-uv run python -m ingestion.producers.seed_producer --create-topics --dataset chile
-uv run python -m ingestion.consumers.bronze_writer --mode local-delta --timeout 30
+uv run python -m write.producers.seed_producer --create-topics --dataset chile
+uv run python -m write.consumers.bronze_writer --mode local-delta --timeout 30
 ```
 
 **Full walkthrough:** [docs/ONBOARDING.md](docs/ONBOARDING.md)
@@ -255,7 +255,7 @@ poc-data-eng/
 │   ├── ci-dev-qa.yml               # PR → develop: lint, tests, (TODO) integration
 │   └── cd-production.yml           # merge → main: (TODO) DAB deploy + approval
 │
-├── ingestion/                      # ── Bronze pipeline ──
+├── write/                          # ── Bronze pipeline (ingest → write) ──
 │   ├── generate_seeds_unified.py   # Chile (real SEN) + FF (mapped + jitter) seed gen
 │   ├── config/settings.py          # KafkaConfig + DatabricksConfig + AppConfig dataclasses
 │   ├── producers/seed_producer.py  # CSV → Kafka topics (5 topics + DLQ)
@@ -284,7 +284,7 @@ poc-data-eng/
 
 ## 📊 Data model
 
-### Bronze tables ([`ingestion/schemas/bronze_ddl.sql`](ingestion/schemas/bronze_ddl.sql))
+### Bronze tables ([`write/schemas/bronze_ddl.sql`](write/schemas/bronze_ddl.sql))
 
 | Table | Purpose | Key columns | Partition |
 |---|---|---|---|
@@ -465,7 +465,7 @@ Run locally:
 uv run pytest                                  # smoke tests
 uv run pytest --cov=ingestion --cov-report=term  # with coverage
 uv run ruff check .                            # lint
-uv run sqlfluff lint ingestion/schemas/        # SQL lint
+uv run sqlfluff lint write/schemas/            # SQL lint
 ```
 
 ---
@@ -550,8 +550,8 @@ DAG-level alerts: email + Slack on failure, SLA miss, and DLQ threshold breach (
 ### 🔄 In progress (Sprint 1-2)
 
 - [ ] Make `energy_ingestion_dag.py` env-aware (currently hardcoded `databricks-sql` + `kafka:9092`)
-- [ ] Source validator (`ingestion/validators/source_validator.py`) — 9 pre-ingestion checks
-- [ ] Bronze DQ checks (`ingestion/dq/bronze_checks.py`) — offline + online modes
+- [ ] Source validator (`write/validators/source_validator.py`) — 9 pre-ingestion checks
+- [ ] Bronze DQ checks (`write/dq/bronze_checks.py`) — offline + online modes
 
 ### 📋 Backlog (Sprint 2-5)
 
