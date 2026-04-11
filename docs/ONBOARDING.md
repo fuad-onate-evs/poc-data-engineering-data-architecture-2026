@@ -162,7 +162,7 @@ poc-data-eng/
 | Original POC brief | [poc-overview.md](poc-overview.md) |
 | Visual widgets | [widgets/](widgets/) |
 | Sprint board snapshots | [pm/](pm/) |
-| Last-session handoff notes | [../SESSION_UPDATE.md](../SESSION_UPDATE.md) |
+| Cross-session handoff archive | [../sessions/](../sessions/README.md) |
 
 ## 10. Common troubleshooting
 

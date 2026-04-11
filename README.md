@@ -238,8 +238,8 @@ uv run python -m ingestion.consumers.bronze_writer --mode local-delta --timeout 
 ```text
 poc-data-eng/
 ├── README.md                       # ← you are here
-├── AGENTS.md                       # full architecture + conventions reference
-├── SESSION_UPDATE.md               # last-session handoff for IDE agents
+├── AGENTS.md                       # full architecture + conventions reference (LLM project context)
+├── sessions/                       # chronological cross-session handoff archive
 ├── pyproject.toml                  # uv-managed deps + tool configs (ruff, pytest, mypy, sqlfluff)
 ├── uv.lock                         # locked dependency graph (committed)
 ├── .python-version                 # 3.12
@@ -578,7 +578,7 @@ Full sprint breakdown: [docs/poc-agile-plan-energy.md](docs/poc-agile-plan-energ
 | [docs/poc-overview.md](docs/poc-overview.md) | Original POC brief (cost, schedule, justification) |
 | [docs/poc-agile-plan-energy.md](docs/poc-agile-plan-energy.md) | Bilingual sprint plan: 5 sprints, 6 epics, 15 stories, 148 SP |
 | [docs/widgets/](docs/widgets/) | Interactive Chile + FF grid simulations (HTML) |
-| [SESSION_UPDATE.md](SESSION_UPDATE.md) | Last-session handoff for IDE agents |
+| [sessions/](sessions/README.md) | Chronological cross-session handoff archive (latest first) |
 
 ---
 
