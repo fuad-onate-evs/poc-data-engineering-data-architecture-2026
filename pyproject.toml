@@ -24,6 +24,9 @@ dependencies = [
     "polars>=1.20,<2.0",
     "pandas>=2.2,<3.0",
     "pyarrow>=18.0,<19.0",
+    # HTTP / integrations
+    "requests>=2.32,<3.0",
+    "tenacity>=9.0,<10.0",
     # Utils
     "python-dotenv>=1.0,<2.0",
 ]
@@ -36,6 +39,8 @@ dev = [
     "pre-commit>=4.0,<5.0",
     "mypy>=1.13,<2.0",
     "sqlfluff>=3.2,<4.0",
+    "responses>=0.25,<1.0",
+    "types-requests>=2.32,<3.0",
 ]
 
 [tool.ruff]

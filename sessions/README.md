@@ -6,6 +6,7 @@
 
 | Date | Session | Headline |
 |---|---|---|
+| 2026-04-11 | [LLM rename + write rename + Trello](2026-04-11-llm-write-trello.md) | Rewrote README, renamed `CLAUDE.md`→`LLM.md`, restructured `SESSION_UPDATE.md` into `sessions/`, renamed `ingestion/`→`write/`, built first-class Trello integration (4 use cases, 22 tests, GHA workflow, docs) |
 | 2026-04-10 | [Bootstrap](2026-04-10-bootstrap.md) | Materialized scaffold from chat artifacts, set up uv project, wrote README + ONBOARDING + LLM.md, initialized git |
 
 ---

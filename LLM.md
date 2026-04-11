@@ -58,9 +58,11 @@ poc-data-eng/
 │   └── cd-production.yml           # Stub: DAB deploy with approval gate
 ├── write/                          # ingest/produce/consume into Bronze
 │   ├── generate_seeds_unified.py   # Chile (real SEN) + FF (mapped + jitter)
-│   ├── config/settings.py          # KafkaConfig, DatabricksConfig, AppConfig
+│   ├── config/settings.py          # KafkaConfig, DatabricksConfig, TrelloConfig, AppConfig
 │   ├── producers/seed_producer.py  # CSV → Kafka topics
 │   ├── consumers/bronze_writer.py  # Kafka → Bronze (3 modes: local-delta, databricks-sql, spark)
+│   ├── integrations/
+│   │   └── trello/                 # First-class Trello sync (PM + CI/CD + alerts + assets)
 │   └── schemas/bronze_ddl.sql      # Unity Catalog DDL for Bronze tables + DLQ
 ├── dags/
 │   └── energy_ingestion_dag.py     # Airflow DAG (currently single-env, see TODO)
@@ -156,7 +158,8 @@ Chile is the source of truth. FF nodes diverge via:
 - [x] Kafka producer (`seed_producer.py`)
 - [x] Kafka consumer → Bronze (`bronze_writer.py`, 3 modes: local-delta / databricks-sql / spark)
 - [x] Bronze DDL (Unity Catalog, 5 tables + DLQ)
-- [x] Settings module (KafkaConfig, DatabricksConfig, AppConfig)
+- [x] Settings module (KafkaConfig, DatabricksConfig, TrelloConfig, AppConfig)
+- [x] Trello integration (`write/integrations/trello/`) — first-class module: client + 4 sync use cases (board pull, PR card move, incident, asset upsert) + CLI + 22 unit tests + GHA workflow + docs
 - [x] Airflow DAG (`energy_ingestion_dag.py` — single-env, **not yet env-aware**)
 - [x] README + ONBOARDING + POC overview docs
 - [x] Interactive simulation widgets (Chile + FF)

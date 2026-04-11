@@ -257,9 +257,11 @@ poc-data-eng/
 │
 ├── write/                          # ── Bronze pipeline (ingest → write) ──
 │   ├── generate_seeds_unified.py   # Chile (real SEN) + FF (mapped + jitter) seed gen
-│   ├── config/settings.py          # KafkaConfig + DatabricksConfig + AppConfig dataclasses
+│   ├── config/settings.py          # KafkaConfig + DatabricksConfig + TrelloConfig + AppConfig
 │   ├── producers/seed_producer.py  # CSV → Kafka topics (5 topics + DLQ)
 │   ├── consumers/bronze_writer.py  # Kafka → Bronze (3 modes: local-delta, databricks-sql, spark)
+│   ├── integrations/
+│   │   └── trello/                 # First-class Trello sync (board pull, PR sync, alerts, assets)
 │   └── schemas/bronze_ddl.sql      # Unity Catalog DDL: 5 tables + dead_letter_queue
 │
 ├── dags/
@@ -578,6 +580,7 @@ Full sprint breakdown: [docs/poc-agile-plan-energy.md](docs/poc-agile-plan-energ
 | [docs/poc-overview.md](docs/poc-overview.md) | Original POC brief (cost, schedule, justification) |
 | [docs/poc-agile-plan-energy.md](docs/poc-agile-plan-energy.md) | Bilingual sprint plan: 5 sprints, 6 epics, 15 stories, 148 SP |
 | [docs/widgets/](docs/widgets/) | Interactive Chile + FF grid simulations (HTML) |
+| [docs/integrations/trello.md](docs/integrations/trello.md) | Trello integration setup, CLI reference, CI/CD wiring |
 | [sessions/](sessions/README.md) | Chronological cross-session handoff archive (latest first) |
 
 ---

@@ -1,0 +1,66 @@
+# Trello PR ↔ card sync
+#
+# Moves a Trello card between Backlog → In Progress → Review → Done as PR
+# events fire. The card is identified by a short link in the branch name,
+# e.g. `feat/abc12345-add-source-validator` → card short link `abc12345`.
+#
+# Requires the following GitHub repo secrets:
+#   TRELLO_API_KEY            — Trello API key (https://trello.com/app-key)
+#   TRELLO_TOKEN              — Trello user token
+#   TRELLO_LIST_ID_IN_PROGRESS
+#   TRELLO_LIST_ID_REVIEW
+#   TRELLO_LIST_ID_DONE
+#
+# Cards are matched by extracting the first 8-char hex segment after the
+# branch type prefix. If no card id is found, the job no-ops gracefully.
+
+name: trello-pr-sync
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, closed]
+
+jobs:
+  sync-card:
+    runs-on: ubuntu-latest
+    if: ${{ secrets.TRELLO_API_KEY != '' }}  # skip when not configured
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Sync deps
+        run: uv sync
+
+      - name: Extract card short link from branch name
+        id: card
+        run: |
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          # Match patterns like feat/abc12345-..., fix/abc12345-..., etc.
+          CARD=$(echo "$BRANCH" | grep -oE '[a-zA-Z0-9]{8}' | head -1 || true)
+          echo "card_id=$CARD" >> "$GITHUB_OUTPUT"
+          echo "Extracted card id: $CARD"
+
+      - name: Decide target list
+        id: target
+        run: |
+          if [[ "${{ github.event.action }}" == "opened" ]]; then
+            echo "list_id=${{ secrets.TRELLO_LIST_ID_IN_PROGRESS }}" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event.action }}" == "ready_for_review" ]]; then
+            echo "list_id=${{ secrets.TRELLO_LIST_ID_REVIEW }}" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event.action }}" == "closed" && "${{ github.event.pull_request.merged }}" == "true" ]]; then
+            echo "list_id=${{ secrets.TRELLO_LIST_ID_DONE }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "list_id=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Move card
+        if: ${{ steps.card.outputs.card_id != '' && steps.target.outputs.list_id != '' }}
+        env:
+          TRELLO_API_KEY: ${{ secrets.TRELLO_API_KEY }}
+          TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+        run: |
+          uv run python -m write.integrations.trello.cli move-card \
+            --card "${{ steps.card.outputs.card_id }}" \
+            --to "${{ steps.target.outputs.list_id }}" \
+            --pr-url "${{ github.event.pull_request.html_url }}"
