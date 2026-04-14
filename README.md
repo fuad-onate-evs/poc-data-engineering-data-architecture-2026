@@ -639,6 +639,8 @@ Full sprint breakdown: [docs/poc-agile-plan-energy.md](docs/poc-agile-plan-energ
 | [docs/poc-agile-plan-energy.md](docs/poc-agile-plan-energy.md) | Bilingual sprint plan: 5 sprints, 6 epics, 15 stories, 148 SP |
 | [docs/widgets/](docs/widgets/) | Interactive Chile + FF grid simulations (HTML) — open in a browser for stakeholder review |
 | [docs/integrations/trello.md](docs/integrations/trello.md) | Trello integration setup, CLI reference, CI/CD wiring — board: [poc-evalueserve](https://trello.com/b/vVdaJpNH/poc-evalueserve) |
+| [docs/CONVENTIONS.md](docs/CONVENTIONS.md) | Naming, branches, commits, units — linkable from PR reviews |
+| [docs/sprints/plan.yaml](docs/sprints/plan.yaml) | Declarative source of truth for the Trello board (`seed-board` consumes it) |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Branch / commit workflow, no-coding-agent-attribution policy, DoD |
 | [sessions/](sessions/README.md) | Chronological cross-session handoff archive (latest first) |
 

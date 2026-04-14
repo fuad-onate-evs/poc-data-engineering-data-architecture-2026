@@ -86,7 +86,30 @@ uv run python -m write.integrations.trello.cli upsert-asset \
   --table bronze.scada_telemetry \
   --rows 1234 \
   --freshness 2026-04-11T10:00:00Z
+
+# Seed the board from the declarative plan (idempotent)
+uv run python -m write.integrations.trello.cli seed-board \
+  --plan docs/sprints/plan.yaml
+# Dry-run first to preview:
+uv run python -m write.integrations.trello.cli seed-board \
+  --plan docs/sprints/plan.yaml --dry-run
+
+# Rename a list (used to fix the Sprint 1 "In Pogress" typo)
+uv run python -m write.integrations.trello.cli rename-list \
+  --list <list_id> --to "In Progress"
 ```
+
+### Seeding the board from `plan.yaml`
+
+[`../sprints/plan.yaml`](../sprints/plan.yaml) is the declarative source of truth for the Trello board: labels, lists mapped to workflow states (`backlog` / `todo` / `in_progress` / `review` / `done`), and every story/task with owner + SP + acceptance criteria.
+
+The `seed-board` subcommand reconciles the board with the YAML:
+
+- **Labels** are created by name on first run; subsequent runs reuse existing labels with the same name.
+- **Cards** are keyed by title (`{story_key} · {task title}`). Missing cards are created in the list corresponding to their `state`. Existing cards have their description, labels, and `idList` updated if the YAML changed — no duplicates.
+- **Lists** resolve by name, with a first-4-char prefix fallback so typos like `In Pogress` still map to the `in_progress` state (so the seed works before the `rename-list` fix is applied).
+
+Re-runs are safe — **idempotent by design**. Edit the YAML, re-run, only the changed cards update. Use `--dry-run` to preview without issuing write calls.
 
 ## 4. Programmatic API
 

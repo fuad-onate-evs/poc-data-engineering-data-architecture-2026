@@ -159,13 +159,22 @@ Chile is the source of truth. FF nodes diverge via:
 - [x] Kafka consumer → Bronze (`bronze_writer.py`, 3 modes: local-delta / databricks-sql / spark)
 - [x] Bronze DDL (Unity Catalog, 5 tables + DLQ)
 - [x] Settings module (KafkaConfig, DatabricksConfig, TrelloConfig, AppConfig)
-- [x] Trello integration (`write/integrations/trello/`) — first-class module: client + 4 sync use cases (board pull, PR card move, incident, asset upsert) + CLI + 22 unit tests + GHA workflow + docs
+- [x] Trello integration (`write/integrations/trello/`) — first-class module: client + 5 sync use cases (board pull, PR card move, incident, asset upsert, **seed-board**) + CLI + 31 unit tests + GHA workflow + docs
 - [x] Airflow DAG (`energy_ingestion_dag.py` — single-env, **not yet env-aware**)
+- [x] Airflow healthcheck DAG (`dags/healthcheck_dag.py`) — closes US-1.1 acceptance "UI running, health-check DAG green"
 - [x] README + ONBOARDING + POC overview docs
 - [x] Interactive simulation widgets (Chile + FF)
+- [x] No-coding-agent-attribution gatekeeper (pre-commit + GHA + CONTRIBUTING.md)
+- [x] Tracked `.vscode/` config (Pylance strict, Ruff, Databricks extension, SQLFluff)
+- [x] Naming conventions documented ([docs/CONVENTIONS.md](docs/CONVENTIONS.md)) — Sprint 1 US-1.2
+- [x] Declarative Trello board plan ([docs/sprints/plan.yaml](docs/sprints/plan.yaml)) — source of truth for `seed-board`
 
 ### TODO (deferred to next sessions)
 
+- [ ] Source inventory doc (`docs/sources/inventory.md`) — Sprint 1 US-1.1 follow-up
+- [ ] RACI + stakeholder map (`docs/pm/raci.md`) — Sprint 1 US-1.1 follow-up
+- [ ] Silver schema design (`write/schemas/silver_ddl.sql`) — Sprint 1 US-1.2 follow-up
+- [ ] Gold schema design (`write/schemas/gold_ddl.sql`) — Sprint 1 US-1.2 follow-up
 - [ ] Source validator (`write/validators/source_validator.py`) — Sprint 2
 - [ ] Bronze DQ checks (`write/dq/bronze_checks.py`) — Sprint 2
 - [ ] Make `energy_ingestion_dag.py` env-aware (currently hardcoded `databricks-sql` mode + `kafka:9092`)

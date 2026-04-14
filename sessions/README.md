@@ -6,6 +6,7 @@
 
 | Date | Session | Headline |
 |---|---|---|
+| 2026-04-14 | [Gatekeepers, IDE, Trello creds](2026-04-14-gatekeepers-trello-creds.md) | PR #1 merged (no-attribution gatekeeper + Pylance/Databricks `.vscode` config + Trello wiring + `LLM.md`→`CONTEXT.md` rename), force-pushed main, created Trello Power-Up `poc-data-eng-dev` in personal workspace, confirmed board `poc-evalueserve` has 5 lists + 0 cards |
 | 2026-04-11 | [Context rename + write rename + Trello](2026-04-11-llm-write-trello.md) | Rewrote README, renamed context doc to `CONTEXT.md`, restructured `SESSION_UPDATE.md` into `sessions/`, renamed `ingestion/`→`write/`, built first-class Trello integration (4 use cases, 22 tests, GHA workflow, docs) |
 | 2026-04-10 | [Bootstrap](2026-04-10-bootstrap.md) | Materialized scaffold from chat artifacts, set up uv project, wrote README + ONBOARDING + CONTEXT.md, initialized git |
 
