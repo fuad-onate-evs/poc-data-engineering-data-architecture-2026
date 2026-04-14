@@ -1,6 +1,6 @@
-# LLM.md — POC Data Engineering & Architecture Platform
+# CONTEXT.md — POC Data Engineering & Architecture Platform
 
-> Project context for LLM tooling working on this codebase. If your tooling expects a different filename (`AGENTS.md`, `CLAUDE.md`, `.cursorrules`, etc.), symlink it locally — those alternate names are gitignored.
+> Canonical project context for contributors and coding agents. If your tooling expects a different filename (`AGENTS.md`, `CLAUDE.md`, `.cursorrules`, etc.), symlink it locally — those alternate names are gitignored.
 
 ## Project overview
 
@@ -43,7 +43,7 @@ Seeds (CSV) → Source Validator → Kafka (5 topics) → Bronze Writer → Data
 ```
 poc-data-eng/
 ├── README.md                       # Concise project overview + quick start
-├── LLM.md                          # ← you are here (LLM project context)
+├── CONTEXT.md                      # ← you are here (canonical project context)
 ├── sessions/                       # Cross-session handoff archive (latest first)
 ├── pyproject.toml                  # uv-managed deps + tool configs
 ├── .python-version                 # 3.12

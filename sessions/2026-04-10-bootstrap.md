@@ -17,17 +17,17 @@
 6. **Wrote CI/CD skeletons** (`ci-dev-qa.yml`, `cd-production.yml`) — lint + smoke tests now, full pipeline TODO Sprint 4.
 7. **Wrote a smoke test suite** (`tests/test_smoke.py`) that ast-parses every pipeline module.
 8. **Authored docs**: `README.md` (rewritten with industry-grade conventions), `docs/ONBOARDING.md` (team walkthrough), `docs/poc-overview.md` (canonical project brief from the original Evalueserve doc).
-9. **Reconciled `LLM.md`** to disk truth — Done/TODO blocks now reflect what genuinely exists.
+9. **Reconciled `CONTEXT.md`** to disk truth — Done/TODO blocks now reflect what genuinely exists.
 10. **Cleaned cruft**: deleted ~30 `:Zone.Identifier` and `:mshield` files, browser-download dupes (`(1).py`, `ff2.html`, `sprint1.png (1).png`), older seed-generator variants, both ZIPs after extraction, empty `ff/` and `pm/` dirs.
 11. **Initialized git**, made the first commit, added the GitHub remote (no push), installed pre-commit hooks.
-12. **Established `LLM.md` as the project context doc** for any LLM tooling working on this codebase; added gitignore entries for tool-specific alternate filenames (`AGENTS.md`, `CLAUDE.md`, `.cursorrules`, etc.) so local symlinks stay possible without polluting commits.
+12. **Established `CONTEXT.md` as the canonical project context doc** for contributors and any coding agent working on this codebase; added gitignore entries for tool-specific alternate filenames (`AGENTS.md`, `CLAUDE.md`, `.cursorrules`, etc.) so local symlinks stay possible without polluting commits.
 13. **Restructured** `SESSION_UPDATE.md` into a versioned `sessions/` directory for cross-session context.
 
 ---
 
 ## State at end of session
 
-- **Tree** matches the layout in [../LLM.md](../LLM.md) (Databricks-only)
+- **Tree** matches the layout in [../CONTEXT.md](../CONTEXT.md) (Databricks-only)
 - **Deps** installed in `.venv` via `uv sync` + `uv sync --group dev` (writes `uv.lock`)
 - **Smoke tests** green (`uv run pytest`)
 - **Lint** clean (`uv run ruff check .`)
@@ -75,7 +75,7 @@
 
 | Order | File | Why |
 |---|---|---|
-| 1 | [../LLM.md](../LLM.md) | Architecture, conventions, current Done/TODO |
+| 1 | [../CONTEXT.md](../CONTEXT.md) | Architecture, conventions, current Done/TODO |
 | 2 | [../docs/ONBOARDING.md](../docs/ONBOARDING.md) | Setup + commands + troubleshooting |
 | 3 | [../docs/poc-agile-plan-energy.md](../docs/poc-agile-plan-energy.md) | Sprint plan with story-point ownership |
 | 4 | [../write/consumers/bronze_writer.py](../write/consumers/bronze_writer.py) | Core consumer with 3 modes |

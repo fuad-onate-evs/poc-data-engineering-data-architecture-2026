@@ -6,8 +6,8 @@
 
 | Date | Session | Headline |
 |---|---|---|
-| 2026-04-11 | [LLM rename + write rename + Trello](2026-04-11-llm-write-trello.md) | Rewrote README, renamed `CLAUDE.md`→`LLM.md`, restructured `SESSION_UPDATE.md` into `sessions/`, renamed `ingestion/`→`write/`, built first-class Trello integration (4 use cases, 22 tests, GHA workflow, docs) |
-| 2026-04-10 | [Bootstrap](2026-04-10-bootstrap.md) | Materialized scaffold from chat artifacts, set up uv project, wrote README + ONBOARDING + LLM.md, initialized git |
+| 2026-04-11 | [Context rename + write rename + Trello](2026-04-11-llm-write-trello.md) | Rewrote README, renamed context doc to `CONTEXT.md`, restructured `SESSION_UPDATE.md` into `sessions/`, renamed `ingestion/`→`write/`, built first-class Trello integration (4 use cases, 22 tests, GHA workflow, docs) |
+| 2026-04-10 | [Bootstrap](2026-04-10-bootstrap.md) | Materialized scaffold from chat artifacts, set up uv project, wrote README + ONBOARDING + CONTEXT.md, initialized git |
 
 ---
 
@@ -52,18 +52,18 @@ Keep sessions focused on **state changes and decisions**, not narration. Future 
 | Location | Purpose | Lifetime |
 |---|---|---|
 | `sessions/` | Chronological log of *what was done when* | Permanent, append-only |
-| [../LLM.md](../LLM.md) | Current architecture, conventions, Done/TODO | Mutable, always reflects HEAD |
+| [../CONTEXT.md](../CONTEXT.md) | Current architecture, conventions, Done/TODO | Mutable, always reflects HEAD |
 | [../docs/ONBOARDING.md](../docs/ONBOARDING.md) | First-day team walkthrough | Stable, rarely changes |
 | [../docs/poc-agile-plan-energy.md](../docs/poc-agile-plan-energy.md) | Sprint plan, ownership, SP | Stable through the sprint |
 | [../README.md](../README.md) | Public-facing project overview | Stable, marketing-grade |
 
-If you're tempted to put information in `sessions/` that's actually about the project's *current* state (not what changed), put it in `LLM.md` instead.
+If you're tempted to put information in `sessions/` that's actually about the project's *current* state (not what changed), put it in `CONTEXT.md` instead.
 
 ---
 
 ## Why this directory exists
 
-LLM coding tools and human team members both need to ramp into a project quickly. A single `SESSION_UPDATE.md` overwritten each session loses history. A `sessions/` directory keeps every handoff readable in chronological order, so anyone resuming the project can:
+Coding agents and human team members both need to ramp into a project quickly. A single `SESSION_UPDATE.md` overwritten each session loses history. A `sessions/` directory keeps every handoff readable in chronological order, so anyone resuming the project can:
 
 1. Read the latest session file → know where things stand and what's next
 2. Skim earlier sessions backward → understand *how* the project got here when something is unclear

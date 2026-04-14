@@ -16,3 +16,18 @@ repos:
       - id: conventional-pre-commit
         stages: [commit-msg]
         args: [feat, fix, docs, chore, refactor, test, ci, build, perf]
+  - repo: local
+    hooks:
+      - id: no-ai-attribution-content
+        name: no ai attribution (tracked content)
+        entry: python scripts/hooks/check_no_ai_attribution.py
+        language: system
+        pass_filenames: true
+        stages: [pre-commit]
+        types: [text]
+      - id: no-ai-attribution-commit-msg
+        name: no ai attribution (commit message)
+        entry: python scripts/hooks/check_no_ai_attribution.py
+        language: system
+        pass_filenames: true
+        stages: [commit-msg]

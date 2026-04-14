@@ -24,12 +24,18 @@ transform/target/
 transform/dbt_packages/
 
 # IDE / OS
-.vscode/
 .idea/
 .DS_Store
 Thumbs.db
 
-# LLM tooling — alternate context filenames (symlinks to LLM.md)
+# VS Code — ignore user-local state but keep shared settings/extensions tracked
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# Developer tooling — alternate context filenames (symlinks to CONTEXT.md)
 AGENTS.md
 CLAUDE.md
 .cursorrules

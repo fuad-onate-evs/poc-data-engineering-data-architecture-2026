@@ -231,6 +231,54 @@ uv run python -m write.consumers.bronze_writer --mode local-delta --timeout 30
 
 **Full walkthrough:** [docs/ONBOARDING.md](docs/ONBOARDING.md)
 
+### IDE setup (VS Code + Pylance + Databricks)
+
+The repo ships a tracked [`.vscode/`](.vscode/) directory with opinionated defaults:
+
+- [`.vscode/extensions.json`](.vscode/extensions.json) — recommends Pylance, Ruff, the **Databricks VS Code extension**, SQLFluff, YAML/TOML tooling, and the GitHub Actions extension. Opening the repo prompts installation.
+- [`.vscode/settings.json`](.vscode/settings.json) — enables:
+  - **Pylance** in `strict` type-checking mode, scoped to `write/`, `dags/`, `tests/`.
+  - **Ruff** as the default Python formatter, fix-on-save, import-sort on save.
+  - **SQLFluff** with the `databricks` dialect.
+  - **Databricks extension** reads secrets from `envs/.env.dev` (gitignored).
+  - Workspace `.env` loads from `envs/.env.dev` so `uv run` picks up local settings automatically.
+
+Local dev does **not** require `databricks-connect`: the default consumer mode is `local-delta`, which writes Parquet under `data/bronze/` via Polars. Pylance types against the `databricks-sdk` stubs (already shipped by the package) when you work on the `databricks-sql` consumer mode. See [`write/consumers/bronze_writer.py`](write/consumers/bronze_writer.py) for the three execution modes.
+
+```bash
+# Verify the IDE tooling locally (same checks the editor runs on save)
+uv run ruff check .
+uv run ruff format --check .
+uv run mypy write dags
+uv run sqlfluff lint write/schemas/
+```
+
+### Local Kafka (optional)
+
+Not needed for Bronze dev (`local-delta` mode reads seed CSVs directly). If you want a real broker for integration work:
+
+```yaml
+# docker-compose.kafka.yml (create locally; not tracked)
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.7.0
+    environment: { ZOOKEEPER_CLIENT_PORT: 2181 }
+  kafka:
+    image: confluentinc/cp-kafka:7.7.0
+    depends_on: [zookeeper]
+    ports: ["9092:9092"]
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+```
+
+```bash
+docker compose -f docker-compose.kafka.yml up -d
+uv run python -m write.producers.seed_producer --create-topics --dataset chile
+uv run python -m write.consumers.bronze_writer --mode local-delta --timeout 30
+```
+
 ---
 
 ## 📁 Project structure
@@ -238,7 +286,7 @@ uv run python -m write.consumers.bronze_writer --mode local-delta --timeout 30
 ```text
 poc-data-eng/
 ├── README.md                       # ← you are here
-├── LLM.md                       # full architecture + conventions reference (LLM project context)
+├── CONTEXT.md                      # full architecture + conventions reference (project context)
 ├── sessions/                       # chronological cross-session handoff archive
 ├── pyproject.toml                  # uv-managed deps + tool configs (ruff, pytest, mypy, sqlfluff)
 ├── uv.lock                         # locked dependency graph (committed)
@@ -474,7 +522,9 @@ uv run sqlfluff lint write/schemas/            # SQL lint
 
 ## 🚢 Deployment
 
-### CI (`.github/workflows/ci-dev-qa.yml`)
+> **Status note:** `ci-dev-qa.yml` and `cd-production.yml` are **Sprint 1 stubs** — only the shape of the pipeline is in place. The active workflows today are `no-ai-attribution.yml` (PR gatekeeper) and `trello-pr-sync.yml` (PM integration). The checklists below mark each step as done (✅), active (🟢), or deferred (⏳).
+
+### CI (`.github/workflows/ci-dev-qa.yml`) — **stub, Sprint 4**
 
 Triggers on PR → `develop`. Runs:
 
@@ -486,7 +536,15 @@ Triggers on PR → `develop`. Runs:
 6. ⏳ Offline DQ checks (Sprint 4)
 7. ⏳ Kafka integration test (Sprint 4)
 
-### CD (`.github/workflows/cd-production.yml`)
+### Gatekeeper (`.github/workflows/no-ai-attribution.yml`) — **active**
+
+Triggers on every PR. Scans the changed files, commit messages in the PR range, and the PR title + body for coding-agent attribution phrasing. Fails the check on any match. See [CONTRIBUTING.md](CONTRIBUTING.md#no-coding-agent-attribution) for the policy and exempted phrasing.
+
+### Trello PR sync (`.github/workflows/trello-pr-sync.yml`) — **active**
+
+Triggers on PR events. Extracts the Trello card short link from the branch name (`feat/abc12345-...`) and moves the card between Backlog → In Progress → Review → Done. Gates on `secrets.TRELLO_API_KEY` so it no-ops until configured. Full wiring in [docs/integrations/trello.md](docs/integrations/trello.md).
+
+### CD (`.github/workflows/cd-production.yml`) — **stub, Sprint 4**
 
 Triggers on merge → `main`. Runs:
 
@@ -575,28 +633,29 @@ Full sprint breakdown: [docs/poc-agile-plan-energy.md](docs/poc-agile-plan-energ
 
 | Doc | Purpose |
 |---|---|
-| [LLM.md](LLM.md) | Full architecture, conventions, current Done/TODO — also project context for LLM tooling |
+| [CONTEXT.md](CONTEXT.md) | Full architecture, conventions, current Done/TODO — canonical project context |
 | [docs/ONBOARDING.md](docs/ONBOARDING.md) | First-day team walkthrough (prereqs, setup, troubleshooting) |
 | [docs/poc-overview.md](docs/poc-overview.md) | Original POC brief (cost, schedule, justification) |
 | [docs/poc-agile-plan-energy.md](docs/poc-agile-plan-energy.md) | Bilingual sprint plan: 5 sprints, 6 epics, 15 stories, 148 SP |
-| [docs/widgets/](docs/widgets/) | Interactive Chile + FF grid simulations (HTML) |
-| [docs/integrations/trello.md](docs/integrations/trello.md) | Trello integration setup, CLI reference, CI/CD wiring |
+| [docs/widgets/](docs/widgets/) | Interactive Chile + FF grid simulations (HTML) — open in a browser for stakeholder review |
+| [docs/integrations/trello.md](docs/integrations/trello.md) | Trello integration setup, CLI reference, CI/CD wiring — board: [poc-evalueserve](https://trello.com/b/vVdaJpNH/poc-evalueserve) |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Branch / commit workflow, no-coding-agent-attribution policy, DoD |
 | [sessions/](sessions/README.md) | Chronological cross-session handoff archive (latest first) |
 
 ---
 
 ## 🤝 Contributing
 
-This is a closed POC for Evalueserve. Internal team workflow:
+Closed POC for Evalueserve. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow, including the **no-coding-agent-attribution policy** enforced by pre-commit and the [`no-ai-attribution.yml`](.github/workflows/no-ai-attribution.yml) GitHub Action.
 
-1. Create a feature branch from `develop`: `git checkout -b feat/<ticket>`
-2. Make your changes, run `uv run pre-commit run --all-files` locally
-3. Commit using conventional format (the hook will reject malformed messages)
-4. Push and open a PR to `develop`
-5. CI must be green (lint + tests + format)
-6. Get **at least 1 review** from another DE
-7. Squash-merge into `develop` (auto-deploys to qa)
-8. After QA validation, PM opens release PR `develop → main` (auto-deploys to prd with approval gate)
+Summary:
+
+1. Branch from `develop`: `git checkout -b feat/<card-shortlink>-<slug>` (see [docs/integrations/trello.md](docs/integrations/trello.md) for the branch-naming convention).
+2. `uv run pre-commit run --all-files` locally before pushing.
+3. Conventional-commit subject (enforced by hook).
+4. PR to `develop`. All checks must be green: lint, format, tests, `no-ai-attribution`, `trello-pr-sync`.
+5. ≥ 1 reviewer, then squash-merge → qa.
+6. After QA validation, PM opens release PR `develop → main` (prd approval gate).
 
 **Definition of Done** (per [docs/poc-agile-plan-energy.md](docs/poc-agile-plan-energy.md#dod--definition-of-done)):
 

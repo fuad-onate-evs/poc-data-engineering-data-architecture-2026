@@ -1,4 +1,4 @@
-# 2026-04-11 — LLM rename, write/ rename, Trello integration
+# 2026-04-11 — Context rename, write/ rename, Trello integration
 
 > **Session type:** Refactors + first-class integration
 > **Owner:** Fuad Oñate — Tech Lead @ BairesDev (Evalueserve POC)
@@ -14,9 +14,9 @@
 
 1. **Rewrote README** with industry-grade conventions: badges, TOC, Mermaid architecture + orchestration diagrams, tech-stack matrix, Bronze data model, data-source provenance, env matrix, dev workflow, test pyramid, deployment notes, cost model, observability/SLA, roadmap, references. (Commit `abfc4f1`)
 
-2. **Adopted gatekeeper rule**: strip all AI/Claude/Anthropic references from PR descriptions, commit messages, and tracked file content. Saved as a permanent feedback memory in the user's auto-memory.
+2. **Adopted gatekeeper rule**: strip all coding-agent attribution from PR descriptions, commit messages, and tracked file content.
 
-3. **Renamed `CLAUDE.md` → `AGENTS.md`** then **→ `LLM.md`**, adopting a neutral name and gitignoring tool-specific filename fallbacks (`AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `.cursor/`, `.aider*`, `.continuerules`) so any LLM tooling can pick up the doc via local symlink without polluting commits. Updated all references in README, ONBOARDING, poc-overview, sessions. (Commits `569f555`, `40bca16`)
+3. **Renamed the project context doc** to a neutral name (current: `CONTEXT.md`), gitignoring tool-specific filename fallbacks (`AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `.cursor/`, `.aider*`, `.continuerules`) so any coding agent can pick up the doc via local symlink without polluting commits. Updated all references in README, ONBOARDING, poc-overview, sessions. (Commits `569f555`, `40bca16`)
 
 4. **Restructured `SESSION_UPDATE.md` → `sessions/`** as a versioned, append-only handoff archive. Added [sessions/README.md](README.md) with naming convention (`YYYY-MM-DD-<slug>.md`), file structure guidelines, lifecycle rules, and a "what belongs here vs other docs" matrix. Moved the bootstrap content to [2026-04-10-bootstrap.md](2026-04-10-bootstrap.md). (Commit `f059093`)
 
@@ -64,7 +64,7 @@
 
 ## State at end of session
 
-- **Tree** matches the layout in [../LLM.md](../LLM.md) with the new `write/integrations/trello/` package
+- **Tree** matches the layout in [../CONTEXT.md](../CONTEXT.md) with the new `write/integrations/trello/` package
 - **Deps** updated: added `requests`, `tenacity` to runtime; `responses`, `types-requests` to dev
 - **Tests** 27/27 green (5 smoke tests + 22 Trello unit tests)
 - **Lint** clean (`uv run ruff check .`)
@@ -112,7 +112,7 @@
 
 | Order | File | Why |
 |---|---|---|
-| 1 | [../LLM.md](../LLM.md) | Architecture, conventions, current Done/TODO |
+| 1 | [../CONTEXT.md](../CONTEXT.md) | Architecture, conventions, current Done/TODO |
 | 2 | [../docs/integrations/trello.md](../docs/integrations/trello.md) | Trello integration: setup, CLI, CI/CD, failure modes |
 | 3 | [../write/integrations/trello/sync.py](../write/integrations/trello/sync.py) | The four sync use cases |
 | 4 | [../write/integrations/trello/client.py](../write/integrations/trello/client.py) | REST client (note the `_request_raw` / `_request` split) |
