@@ -16,7 +16,18 @@ You need a **Trello API key** and a **user token**.
 1. Sign in to Trello and visit <https://trello.com/app-key>
 2. Copy your **API key** → `TRELLO_API_KEY`
 3. Click **Token** at the top of the page, authorize, copy the long string → `TRELLO_TOKEN`
-4. Open your board → URL → grab the board ID (the chunk between `/b/` and the next `/`) → `TRELLO_BOARD_ID`
+4. Open your board → URL → grab the board id (the chunk between `/b/` and the next `/`) → `TRELLO_BOARD_ID`
+
+### Project board
+
+The canonical Evalueserve POC board is [poc-evalueserve](https://trello.com/b/vVdaJpNH/poc-evalueserve). The short link in that URL (`vVdaJpNH`, 8 chars) works directly with the Trello REST API and with every CLI command in this module. You can also resolve the 24-char hex id with:
+
+```bash
+source envs/.env.dev
+uv run python -m write.integrations.trello.cli list-boards  # prints id + name + url
+```
+
+Either form can be set in `TRELLO_BOARD_ID`; downstream calls resolve both transparently.
 
 Tokens are scoped to your user. Use a service account in qa/prd, not your personal account.
 

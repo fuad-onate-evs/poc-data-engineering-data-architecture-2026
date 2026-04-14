@@ -1,0 +1,9 @@
+* text=auto eol=lf
+*.py text diff=python
+*.sql text
+*.md text
+*.yml text
+*.yaml text
+*.toml text
+*.json text
+*.lock text -diff
