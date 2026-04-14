@@ -55,6 +55,25 @@ class TrelloList:
 
 
 @dataclass
+class Label:
+    """A Trello label (board-scoped tag used to annotate cards)."""
+
+    id: str
+    name: str
+    color: str | None
+    board_id: str
+
+    @classmethod
+    def from_api(cls, data: dict[str, Any]) -> Label:
+        return cls(
+            id=data["id"],
+            name=data.get("name", ""),
+            color=data.get("color"),
+            board_id=data.get("idBoard", ""),
+        )
+
+
+@dataclass
 class Card:
     """A Trello card (one task / story / issue)."""
 
@@ -67,6 +86,7 @@ class Card:
     closed: bool = False
     due: datetime | None = None
     labels: list[str] = field(default_factory=list)
+    label_ids: list[str] = field(default_factory=list)
     short_link: str = ""
 
     @classmethod
@@ -86,5 +106,6 @@ class Card:
             closed=data.get("closed", False),
             due=due_parsed,
             labels=[lbl.get("name", "") for lbl in data.get("labels", [])],
+            label_ids=[lbl["id"] for lbl in data.get("labels", []) if "id" in lbl],
             short_link=data.get("shortLink", ""),
         )
