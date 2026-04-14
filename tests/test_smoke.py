@@ -16,6 +16,7 @@ MODULES = [
     "write/producers/seed_producer.py",
     "write/consumers/bronze_writer.py",
     "dags/energy_ingestion_dag.py",
+    "dags/healthcheck_dag.py",
 ]
 
 

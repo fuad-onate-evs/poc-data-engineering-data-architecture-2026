@@ -7,6 +7,8 @@ Usage:
     uv run python -m write.integrations.trello.cli move-card --card <short_link> --to <list_id> [--pr-url URL]
     uv run python -m write.integrations.trello.cli incident --list <list_id> --title "..." --body "..." --severity P1
     uv run python -m write.integrations.trello.cli upsert-asset --list <list_id> --table bronze.scada --rows 12345 --freshness 2026-04-11T10:00:00Z
+    uv run python -m write.integrations.trello.cli seed-board --plan docs/sprints/plan.yaml [--board <override>] [--dry-run]
+    uv run python -m write.integrations.trello.cli rename-list --list <list_id> --to "In Progress"
 
 Auth comes from the standard env file (`envs/.env.<env>` or `.env`):
     TRELLO_API_KEY, TRELLO_TOKEN, TRELLO_BOARD_ID, etc.
@@ -19,13 +21,18 @@ import json
 import logging
 import sys
 from pathlib import Path
+from typing import Any
+
+import yaml
 
 from write.config.settings import TrelloConfig
 
 from .client import TrelloClient, TrelloError, TrelloNotConfiguredError
 from .sync import (
+    SeedReport,
     move_card_for_pr_event,
     pull_board_snapshot,
+    seed_board_from_plan,
     upsert_asset_card,
     upsert_incident_card,
 )
@@ -72,6 +79,28 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--table", required=True)
     p.add_argument("--rows", type=int, required=True)
     p.add_argument("--freshness", required=True, help="ISO 8601 timestamp")
+
+    # seed-board
+    p = sub.add_parser(
+        "seed-board",
+        help="Populate a board from a declarative plan.yaml (idempotent)",
+    )
+    p.add_argument("--plan", required=True, type=Path, help="Path to the plan YAML file")
+    p.add_argument(
+        "--board",
+        default=None,
+        help="Override plan's board_id (useful for testing against a sandbox board)",
+    )
+    p.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Report what would change without issuing Trello write calls",
+    )
+
+    # rename-list
+    p = sub.add_parser("rename-list", help="Rename a board list (used to fix typos)")
+    p.add_argument("--list", required=True, dest="list_id")
+    p.add_argument("--to", required=True, dest="new_name")
 
     return parser
 
@@ -143,7 +172,32 @@ def _dispatch(args: argparse.Namespace, client: TrelloClient) -> int:
         print(f"asset card: {card.id} {card.url}")
         return 0
 
+    if args.cmd == "seed-board":
+        plan = _load_plan(args.plan)
+        if args.board:
+            plan["board_id"] = args.board
+        report: SeedReport = seed_board_from_plan(client, plan, dry_run=args.dry_run)
+        print(report.summary())
+        for e in report.errors:
+            print(f"  ERROR: {e}", file=sys.stderr)
+        return 1 if report.errors else 0
+
+    if args.cmd == "rename-list":
+        renamed = client.rename_list(args.list_id, args.new_name)
+        print(f"renamed list {renamed.id} -> {renamed.name}")
+        return 0
+
     raise SystemExit(f"unknown command: {args.cmd}")
+
+
+def _load_plan(path: Path) -> dict[str, Any]:
+    text = path.read_text(encoding="utf-8")
+    data = yaml.safe_load(text)
+    if not isinstance(data, dict):
+        raise ValueError(f"{path}: expected a YAML mapping at the top level")
+    if "board_id" not in data:
+        raise ValueError(f"{path}: missing required key 'board_id'")
+    return data
 
 
 if __name__ == "__main__":

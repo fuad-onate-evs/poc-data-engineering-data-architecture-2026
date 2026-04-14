@@ -25,7 +25,7 @@ from tenacity import (
 
 from write.config.settings import TrelloConfig
 
-from .models import Board, Card, TrelloList
+from .models import Board, Card, Label, TrelloList
 
 log = logging.getLogger(__name__)
 
@@ -152,6 +152,10 @@ class TrelloClient:
     def get_card(self, card_id: str) -> Card:
         return Card.from_api(self._request("GET", f"cards/{card_id}"))
 
+    def list_labels_in_board(self, board_id: str) -> list[Label]:
+        data = self._request("GET", f"boards/{board_id}/labels", params={"limit": 1000})
+        return [Label.from_api(lbl) for lbl in data]
+
     # ─── Write endpoints ────────────────────────────────────────────
 
     def create_card(
@@ -189,3 +193,20 @@ class TrelloClient:
 
     def archive_card(self, card_id: str) -> Card:
         return self.update_card(card_id, closed=True)
+
+    def create_label(self, board_id: str, name: str, color: str | None = None) -> Label:
+        """Create a board-scoped label. Trello accepts color=None for a colorless label."""
+        body: dict[str, Any] = {"idBoard": board_id, "name": name}
+        if color is not None:
+            body["color"] = color
+        return Label.from_api(self._request("POST", "labels", json_body=body))
+
+    def update_list(self, list_id: str, **fields: Any) -> TrelloList:
+        """Update arbitrary list fields. Trello expects camelCase keys.
+
+        Common fields: name, closed, pos.
+        """
+        return TrelloList.from_api(self._request("PUT", f"lists/{list_id}", json_body=fields))
+
+    def rename_list(self, list_id: str, name: str) -> TrelloList:
+        return self.update_list(list_id, name=name)
