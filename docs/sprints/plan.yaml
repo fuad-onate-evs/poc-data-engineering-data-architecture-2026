@@ -1,0 +1,114 @@
+# Declarative plan for the Trello board `poc-evalueserve`.
+#
+# Source of truth for `seed-board` (see write/integrations/trello/sync.py
+# and docs/integrations/trello.md). Edit this file and re-run the CLI:
+#
+#     uv run python -m write.integrations.trello.cli seed-board \
+#         --plan docs/sprints/plan.yaml
+#
+# The seed is idempotent by card title (`{story_key} · {task title}`),
+# so editing a task's state/owner/description and re-running updates the
+# existing card rather than creating duplicates.
+#
+# Narrative story/task breakdown with acceptance criteria lives in
+# docs/poc-agile-plan-energy.md. This YAML is the machine-readable subset.
+
+board_id: "69d5100bc70eeeeffcc22978"
+
+# Map plan states → Trello list names on the board.
+# The seed falls back to a prefix match so the pre-rename typo
+# "In Pogress" still resolves to the `in_progress` state.
+lists:
+  backlog: "Backlog"
+  todo: "TODO"
+  in_progress: "In Progress"
+  review: "Review"
+  done: "Done"
+
+# Board-scoped labels. Missing labels are created on first seed.
+# Sprint + Epic colors are visual cues on the board; owners use the
+# "color: null" (uncolored) labels so the palette stays tidy.
+labels:
+  - { name: "Sprint 1", color: "blue" }
+  - { name: "Sprint 2", color: "green" }
+  - { name: "Sprint 3", color: "yellow" }
+  - { name: "Sprint 4", color: "orange" }
+  - { name: "Sprint 5", color: "red" }
+  - { name: "Epic 1 — Discovery", color: "sky" }
+  - { name: "Epic 2 — Ingest & Storage", color: "lime" }
+  - { name: "Epic 3 — Transform & Model", color: "pink" }
+  - { name: "Epic 4 — Orchestration & CI/CD", color: "purple" }
+  - { name: "Epic 5 — Testing & Delivery", color: "black" }
+  - { name: "DE1", color: null }
+  - { name: "DE2", color: null }
+  - { name: "DE3", color: null }
+  - { name: "PM", color: null }
+
+# Stories — only Sprint 1 in this PR. Sprints 2-5 will be added in
+# follow-up PRs once the team refines each sprint's scope.
+stories:
+  - key: "US-1.1"
+    title: "Source inventory & env setup"
+    sprint: "Sprint 1"
+    epic: "Epic 1 — Discovery"
+    tasks:
+      - title: "Map SCADA, weather, grid, trading, metering sources"
+        owner: "DE1"
+        sp: 3
+        state: "todo"
+        acceptance: "Source catalog with schemas, volumes, SLAs"
+        notes: "Fuentes CEN/CNE ya referenciadas en README; inventory doc en follow-up PR."
+      - title: "Provision Databricks workspace (dev/staging) + S3 buckets"
+        owner: "DE2"
+        sp: 3
+        state: "backlog"
+        acceptance: "Workspace accessible, clusters configured"
+        notes: "Bloqueado por provisión de cuenta Evalueserve."
+      - title: "Setup GitHub repos + branch strategy (main, develop, feature/*)"
+        owner: "DE1"
+        sp: 2
+        state: "done"
+        acceptance: "Repos with protection rules"
+        notes: "fuad-onate-evs/poc-data-engineering-data-architecture-2026 con main/dev-qa/feature."
+      - title: "Setup Airflow environment + health-check DAG"
+        owner: "DE3"
+        sp: 3
+        state: "done"
+        acceptance: "UI running, health check DAG green"
+        notes: "dags/healthcheck_dag.py + energy_ingestion_dag.py"
+      - title: "Define RACI + stakeholder map (grid ops, trading, compliance)"
+        owner: "PM"
+        sp: 2
+        state: "todo"
+        acceptance: "RACI approved"
+        notes: "Pendiente input del PM."
+
+  - key: "US-1.2"
+    title: "Medallion architecture for energy domain"
+    sprint: "Sprint 1"
+    epic: "Epic 1 — Discovery"
+    tasks:
+      - title: "Design Bronze schema (SCADA, weather, ISO CSVs, meter reads)"
+        owner: "DE1"
+        sp: 3
+        state: "done"
+        acceptance: "DDL + diagram"
+        notes: "write/schemas/bronze_ddl.sql"
+      - title: "Design Silver schema (aligned timeseries, weather joins, prices)"
+        owner: "DE1"
+        sp: 3
+        state: "todo"
+        acceptance: "DDL + diagram"
+        notes: "Follow-up PR con write/schemas/silver_ddl.sql"
+      - title: "Design Gold schema (fact_generation, fact_revenue, dims)"
+        owner: "DE1"
+        sp: 2
+        state: "todo"
+        acceptance: "DDL + diagram"
+        notes: "Follow-up PR con write/schemas/gold_ddl.sql"
+      - title: "Document naming conventions (energy domain taxonomy)"
+        owner: "DE1, PM"
+        sp: 3
+        state: "done"
+        acceptance: "Standards doc approved"
+        notes: "docs/CONVENTIONS.md"
